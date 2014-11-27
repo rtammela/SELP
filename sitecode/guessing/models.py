@@ -13,5 +13,5 @@ class Matchselect(models.Model):
 class Matchchoice(models.Model):
 	# Match choice must come from the match choice from Matchselect
 	match = models.ForeignKey(Matchselect)
-	winner_choice = models.BooleanField(RadioSelect)
+	winner_choice = models.CharField(max_length=200)
 	votes = models.IntegerField(default=0)
