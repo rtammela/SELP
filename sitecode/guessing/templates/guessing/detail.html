@@ -1,0 +1,5 @@
+<p>{{ matchselect.match_info }}</p>
+<p>{{ matchselect.pub_date }}</p>
+{% for matchchoice in matchselect.matchchoice_set.all %}
+	<li>{{ matchchoice.winner_choice }} {{ matchchoice.votes }}</li>
+{% endfor %}
