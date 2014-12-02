@@ -1,6 +1,13 @@
 <p>{{ matchselect.match_info }}</p>
 <p>{{ matchselect.match_date }}</p>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'vote' matchselect.id %}" method="post">
+{% csrf_token %}
 {% for matchchoice in matchselect.matchchoice_set.all %}
-	<li>{{ matchchoice.winner_choice }} {{ matchchoice.votes }}</li>
+    <input type="radio" name="matchchoice" id="matchchoice{{ forloop.counter }}" value="{{ matchchoice.id }}" />
+    <label for="matchchoice{{ forloop.counter }}">{{ matchchoice.winner_choice }}</label><br />
 {% endfor %}
-<p> Winner: {{ matchselect.result }}</p>
+<input type="submit" value="Vote" />
+</form>
+<a href="{% url 'results' matchselect.id %}">View results</a>

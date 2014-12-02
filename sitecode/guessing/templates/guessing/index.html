@@ -1,7 +1,7 @@
 {% if latest_question_list %}
     <ul>
     {% for matchselect in latest_question_list %}
-        <li><a href="/guessing/{{ matchselect.id }}/">{{ matchselect.match_info }}</a></li>
+        <li><a href="{% url 'detail' matchselect.id %}">{{ matchselect.match_info }}</a></li>
     {% endfor %}
     </ul>
 {% else %}

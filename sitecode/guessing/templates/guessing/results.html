@@ -1,0 +1,6 @@
+<p>{{ matchselect.match_info }}</p>
+<p>{{ matchselect.match_date }}</p>
+{% for matchchoice in matchselect.matchchoice_set.all %}
+	<li>{{ matchchoice.winner_choice }} {{ matchchoice.votes }} vote{{matchchoice.votes|pluralize }}</li>
+{% endfor %}
+<p> Winner: {{ matchselect.result }}</p>

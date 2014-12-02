@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
-from guessing.models import Matchselect
+from guessing.models import Matchselect, Matchchoice
 
 def index(request):
     latest_question_list = Matchselect.objects.order_by('-match_date')[:5]
@@ -13,8 +14,23 @@ def detail(request, matchselect_id):
 	return render(request, 'guessing/detail.html', {'matchselect': matchselect})
 	
 def results(request, matchselect_id):
-	response = "Results of match %s."
-	return HttpResponse(response % matchselect_id)
+	matchselect = get_object_or_404(Matchselect, pk=matchselect_id)
+	return render(request, 'guessing/results.html', {'matchselect': matchselect})
 	
 def vote(request, matchselect_id):
-	return HttpResponse("You're voting on match %s." % matchselect_id)
+    p = get_object_or_404(Matchselect, pk=matchselect_id)
+    try:
+        selected_choice = p.matchchoice_set.get(pk=request.POST['matchchoice'])
+    except (KeyError, Matchchoice.DoesNotExist):
+        # Redisplay the question voting form.
+        return render(request, 'guessing/detail.html', {
+            'question': p,
+            'error_message': "You didn't select a choice.",
+        })
+    else:
+        selected_choice.votes += 1
+        selected_choice.save()
+        # Always return an HttpResponseRedirect after successfully dealing
+        # with POST data. This prevents data from being posted twice if a
+        # user hits the Back button.
+        return HttpResponseRedirect(reverse('results', args=(p.id,)))
