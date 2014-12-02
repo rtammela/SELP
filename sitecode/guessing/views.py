@@ -24,7 +24,7 @@ def vote(request, matchselect_id):
     except (KeyError, Matchchoice.DoesNotExist):
         # Redisplay the question voting form.
         return render(request, 'guessing/detail.html', {
-            'question': p,
+            'matchselect': p,
             'error_message': "You didn't select a choice.",
         })
     else:
