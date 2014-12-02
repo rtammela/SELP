@@ -1,4 +1,4 @@
 from django.contrib import admin
-from guessing.models import Matchlist
+from guessing.models import Matchselect
 # Register your models here.
-admin.site.register(Matchlist)
+admin.site.register(Matchselect)
