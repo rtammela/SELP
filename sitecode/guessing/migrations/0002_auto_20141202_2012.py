@@ -12,10 +12,13 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RemoveField(
-            model_name='matchselect',
-            name='match_select',
+            model_name='matchchoice',
+            name='result',
         ),
-        migrations.DeleteModel(
-            name='Matchlist',
+        migrations.AddField(
+            model_name='matchselect',
+            name='result',
+            field=models.CharField(default='unknown', max_length=200),
+            preserve_default=True,
         ),
     ]

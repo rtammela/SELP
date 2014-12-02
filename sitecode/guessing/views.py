@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from guessing.models import Matchselect
 
 def index(request):
-    latest_question_list = Matchselect.objects.order_by('-pub_date')[:5]
+    latest_question_list = Matchselect.objects.order_by('-match_date')[:5]
     context = {'latest_question_list': latest_question_list}
     return render(request, 'guessing/index.html', context)
 	

@@ -4,7 +4,8 @@ from django.db import models
 
 class Matchselect(models.Model):
 	match_info = models.CharField(max_length=200)
-	pub_date = models.DateTimeField('data published')
+	match_date = models.DateTimeField('date of match')
+	result = models.CharField(max_length=200, default='unknown')
 	def __str__(self):
 		return self.match_info
 	

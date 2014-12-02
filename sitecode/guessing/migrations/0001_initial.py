@@ -13,19 +13,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Matchchoice',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('winner_choice', models.CharField(max_length=200)),
                 ('votes', models.IntegerField(default=0)),
-            ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='Matchlist',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
-                ('match_list', models.CharField(max_length=200)),
+                ('result', models.CharField(max_length=200)),
             ],
             options={
             },
@@ -34,10 +25,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Matchselect',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('match_info', models.CharField(max_length=200)),
-                ('pub_date', models.DateTimeField(verbose_name='data published')),
-                ('match_select', models.ForeignKey(to='guessing.Matchlist')),
+                ('match_date', models.DateTimeField(verbose_name='date of match')),
             ],
             options={
             },
