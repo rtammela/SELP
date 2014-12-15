@@ -30,6 +30,6 @@ class Matchresult(models.Model):
 class Uservotes(models.Model):
 	voter = models.ForeignKey(User)
 	match = models.ForeignKey(Matchselect)
-	winner_choice = models.ForeignKey(Matchchoice)
+	winner_choice = models.CharField(max_length=50)
 	def __str__(self):
 		return self.winner_choice
