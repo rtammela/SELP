@@ -38,4 +38,14 @@ def vote(request, matchselect_id):
 
 def profile(request, username):
 	u = User.objects.get(username=username)
-	return render(request, 'guessing/profile.html', {'u': u})
+	uvotes = Uservotes.objects.filter(voter=u).values()
+	games = Uservotes.objects.filter(voter=u).values_list('match_id', flat=True)
+	gameinfo = []
+	for i in games:
+		a = Matchselect.objects.filter(pk=i)
+		gameinfo.append(a)
+	voteinfolist = zip(uvotes,gameinfo)
+	return render(request, 'guessing/profile.html', {
+		'u': u,
+		'voteinfolist' : voteinfolist
+		})
