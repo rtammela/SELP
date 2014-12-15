@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 
-from guessing.models import Matchselect, Matchchoice
+from guessing.models import Matchselect, Matchchoice, Matchresult, Uservotes
 
 def index(request):
     latest_question_list = Matchselect.objects.order_by('-match_date')[:5]
@@ -34,3 +35,7 @@ def vote(request, matchselect_id):
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse('results', args=(p.id,)))
+
+def profile(request, username):
+	u = User.objects.get(username=username)
+	return render(request, 'guessing/profile.html', {'u': u})
