@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.template import RequestContext
-from guessing.forms import UserForm
+from guessing.forms import UserForm, MatchForm
 
 from guessing.models import Matchselect, Matchchoice, Matchresult, Uservotes
 
@@ -119,3 +119,22 @@ def user_login(request):
 def user_logout(request):
 	logout(request)
 	return HttpResponseRedirect('/guessing/')
+	
+def add_match(request):
+	context = RequestContext(request)
+	u = User.objects.get(username=request.user.username)
+	if request.method == 'POST':
+		match_form = MatchForm(request.POST)
+		if match_form.is_valid():
+			f = match_form.save()
+			newmatch = Matchselect(game=f.game,team1=f.team1,team2=f.team2,match_date=f.match_date,creator=u)
+			newmatch.save()
+			newmatch.matchchoice_set.create(winner_choice=f.team1,votes='0')
+			newmatch.matchchoice_set.create(winner_choice=f.team2,votes='0')
+			f.delete()
+			return index(request)
+		else:
+			print(form.errors)
+	else:
+		match_form=MatchForm()
+	return render_to_response('guessing/add_match.html', {'match_form' : match_form}, context)
