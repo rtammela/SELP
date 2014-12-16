@@ -12,11 +12,19 @@
 <p>{{ matchselect.match_date }}</p>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-<form action="{% url 'vote' matchselect.id %}" method="post">
-{% csrf_token %}
-{% for matchchoice in matchselect.matchchoice_set.all %}
-    <input type="radio" name="matchchoice" id="matchchoice{{ forloop.counter }}" value="{{ matchchoice.id }}" />
-    <label for="matchchoice{{ forloop.counter }}">{{ matchchoice.winner_choice }}</label><br />
-{% endfor %}
-<input type="submit" value="Vote" />
-</form>
+{% if user.is_authenticated %}
+	<form action="{% url 'vote' matchselect.id %}" method="post">
+	{% csrf_token %}
+	{% for matchchoice in matchselect.matchchoice_set.all %}
+		<input type="radio" name="matchchoice" id="matchchoice{{ forloop.counter }}" value="{{ matchchoice.id }}" />
+		<label for="matchchoice{{ forloop.counter }}">{{ matchchoice.winner_choice }}</label><br />
+	{% endfor %}
+	<input type="submit" value="Vote" />
+	</form>
+{% else %}
+	{% csrf_token %}
+	{% for matchchoice in matchselect.matchchoice_set.all %}
+		<label for="matchchoice{{ forloop.counter }}">{{ matchchoice.winner_choice }}</label><br />
+	{% endfor %}
+	<p>Must be logged in to vote.</p>
+{% endif %}
