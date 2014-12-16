@@ -1,3 +1,5 @@
+<a href="{% url 'index' %}">The Guessing Game</a>
+
 {% if user.is_authenticated %}
 	<p>Welcome, <a href="{% url 'profile' user.username %}">{{ user.username }}</a>!</p>
 {% else %}
