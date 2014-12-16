@@ -9,7 +9,7 @@
 {% endif %}
 
 <p>{{ matchselect.game }}: {{ matchselect.team1}} vs. {{ matchselect.team2}}</p>
-<p>{{ matchselect.match_date }}</p>
+<p>{{ matchselect.match_date.day }}/{{ matchselect.match_date.month }}/{{ matchselect.match_date.year }}</p>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
 {% if user.is_authenticated %}

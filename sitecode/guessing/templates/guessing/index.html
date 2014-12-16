@@ -9,11 +9,15 @@
 {% endif %}
 
 {% if latest_question_list %}
+	<p>Latest matches:</p>
     <ul>
     {% for matchselect in latest_question_list %}
-        <li><a href="{% url 'detail' matchselect.id %}">{{ matchselect.game }}</a></li>
+        <li><a href="{% url 'detail' matchselect.id %}">{{ matchselect.game }}</a>
+		 {{ matchselect.match_date.day }}/{{ matchselect.match_date.month }}</li>
     {% endfor %}
     </ul>
 {% else %}
-    <p>No polls are available.</p>
+    <p>No matches are available.</p>
 {% endif %}
+
+<a href='{% url 'add_match' %}'>Create new match</a>
