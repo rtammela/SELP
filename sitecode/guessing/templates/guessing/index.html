@@ -4,7 +4,7 @@
 	<p>Welcome, <a href="{% url 'profile' user.username %}">{{ user.username }}</a>!</p>
 	<a href="{% url 'logout' %}">Logout</a>
 {% else %}
-	<br>
+	<br><br>
 	<a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a>
 {% endif %}
 
