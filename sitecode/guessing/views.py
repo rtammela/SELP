@@ -1,9 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.template import RequestContext
-from django.shortcuts import render_to_response
 from guessing.forms import UserForm
 
 from guessing.models import Matchselect, Matchchoice, Matchresult, Uservotes
@@ -78,3 +78,22 @@ def register(request):
 		'user_form' : user_form,
 		'registered' : registered
 		},context)
+		
+def user_login(request):
+	context = RequestContext(request)
+	if request.method == 'POST':
+		username = request.POST['username']
+		password = request.POST['password']
+		user = authenticate(username=username, password=password)
+		
+		if user:
+			if user.is_active:
+				login(request, user)
+				return HttpResponseRedirect('/guessing/') 
+			else:
+				return HttpResponse('This account is not active.')
+		else:
+			return HttpResponse('Incorrect login details.')
+	
+	else:
+		return render_to_response('guessing/login.html', {}, context)
