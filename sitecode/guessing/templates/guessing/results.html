@@ -11,5 +11,9 @@
 {% for matchchoice in matchselect.matchchoice_set.all %}
 	<li>{{ matchchoice.winner_choice }} {{ matchchoice.votes }} vote{{matchchoice.votes|pluralize }}</li>
 {% endfor %}
-<p> Winner: {{ matchselect.result }}</p>
-<a href="{% url 'detail' matchselect.id %}">Return to match</a>
+
+{% if matchselect.result %}
+	<p> Winner: {{ matchselect.result }}</p>
+{% else %}
+	<p> Winner: TBA</p>
+{% endif %}
