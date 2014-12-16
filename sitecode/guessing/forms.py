@@ -17,3 +17,4 @@ class MatchForm(forms.ModelForm):
 	
 	class Meta:
 		model = Matchselect
+		fields = ('game', 'team1', 'team2', 'match_date')

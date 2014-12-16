@@ -121,14 +121,23 @@ def user_logout(request):
 	return HttpResponseRedirect('/guessing/')
 	
 def add_match(request):
+	# First checks if user is logged in
+	if not request.user.is_authenticated():
+		return render(
+			request, 
+			'guessing/add_match.html', {
+			'error_message': "You must be logged in to create a new match.",
+		})
 	context = RequestContext(request)
 	u = User.objects.get(username=request.user.username)
 	if request.method == 'POST':
 		match_form = MatchForm(request.POST)
 		if match_form.is_valid():
+			# Temporarily saves form with data inputted by user, then saves form with the user as the creator of the match
 			f = match_form.save()
 			newmatch = Matchselect(game=f.game,team1=f.team1,team2=f.team2,match_date=f.match_date,creator=u)
 			newmatch.save()
+			# Creates set of match choices based on team1 and team2.
 			newmatch.matchchoice_set.create(winner_choice=f.team1,votes='0')
 			newmatch.matchchoice_set.create(winner_choice=f.team2,votes='0')
 			f.delete()
