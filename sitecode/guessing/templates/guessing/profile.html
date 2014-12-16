@@ -1,5 +1,10 @@
-<p>Hi {{ u.username }}!</p>
-<p>Your votes:</p>
+{% if user.is_authenticated %}
+	<p>Welcome, <a href="{% url 'profile' user.username %}">{{ user.username }}</a>!</p>
+{% else %}
+	<a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a>
+{% endif %}
+
+<p>{{ u.username }}'s votes:</p>
 {% for uservotes,g in voteinfolist %}
 	<li><a href="{% url 'results' g.0.id%}">{{g.0}}: {{g.0.team1}} vs. {{g.0.team2}}</a> {{g.0.match_date}}
 		You voted:{{uservotes.winner_choice}}</li>

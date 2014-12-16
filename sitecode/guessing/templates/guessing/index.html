@@ -1,3 +1,9 @@
+{% if user.is_authenticated %}
+	<p>Welcome, <a href="{% url 'profile' user.username %}">{{ user.username }}</a>!</p>
+{% else %}
+	<a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a>
+{% endif %}
+
 {% if latest_question_list %}
     <ul>
     {% for matchselect in latest_question_list %}
