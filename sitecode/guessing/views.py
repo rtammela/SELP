@@ -27,7 +27,7 @@ def detail(request, matchselect_id):
 	
 def results(request, matchselect_id):
 	matchselect = get_object_or_404(Matchselect, pk=matchselect_id)
-	return render(request, 'guessing/results.html', {'matchselect': matchselect})
+	return render(request, 'guessing/results.html', {'matchselect': matchselect, 'q': q})
 	
 def vote(request, matchselect_id):
 	p = get_object_or_404(Matchselect, pk=matchselect_id)

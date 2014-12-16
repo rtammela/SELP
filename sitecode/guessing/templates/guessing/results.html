@@ -14,9 +14,12 @@
 	<!-- Lists each choice, number of votes, and pluralises # of votes -->
 	<li>{{ matchchoice.winner_choice }} {{ matchchoice.votes }} vote{{matchchoice.votes|pluralize }}</li>
 {% endfor %}
+{{q}}
 
-{% if matchselect.result %}
-	<p> Winner: {{ matchselect.result }}</p>
-{% else %}
-	<p> Winner: TBA</p>
-{% endif %}
+{% for w in matchselect.matchresult_set.all %}
+	{% if w.winner %}
+		<p> Winner: {{ w.winner }}</p>
+	{% else %}
+		<p> Winner: TBA</p>
+	{% endif %}
+{% endfor %}
