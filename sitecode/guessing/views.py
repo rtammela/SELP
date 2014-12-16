@@ -26,7 +26,7 @@ def vote(request, matchselect_id):
 	try:
 		selected_choice = p.matchchoice_set.get(pk=request.POST['matchchoice'])
 	except (KeyError, Matchchoice.DoesNotExist):
-		# Redisplay the question voting form.
+		# Redisplay the question voting form if no winner_choice selected
 		return render(
 			request, 
 			'guessing/detail.html', {
@@ -34,6 +34,7 @@ def vote(request, matchselect_id):
 			'error_message': "You didn't select a choice.",
 		})
 	else:
+		# Only logged in users can vote
 		if request.user.is_authenticated():
 			u = User.objects.get(username=request.user.username)
 			user_vote = Uservotes(voter=u,match=p,winner_choice=selected_choice)
@@ -51,13 +52,16 @@ def vote(request, matchselect_id):
 			return HttpResponse('Must be logged in to vote')
 
 def profile(request, username):
+	# User's winner_choice of all matches where user has voted are fetched:
 	u = User.objects.get(username=username)
 	uvotes = Uservotes.objects.filter(voter=u).values()
 	games = Uservotes.objects.filter(voter=u).values_list('match_id', flat=True)
+	# Match details of the corresponding matches are fetched:
 	gameinfo = []
 	for i in games:
 		a = Matchselect.objects.filter(pk=i)
 		gameinfo.append(a)
+	# Winner_choice is paired with match details for each match voted in:
 	voteinfolist = zip(uvotes,gameinfo)
 	return render(
 		request, 'guessing/profile.html', {
@@ -75,8 +79,8 @@ def register(request):
 			user.set_password(user.password)
 			user.save()
 			registered = True
-		#else:
-		#	print user_form.errors
+		else:
+			print(user_form.errors)
 	else:
 		user_form = UserForm()
 	return render_to_response(
