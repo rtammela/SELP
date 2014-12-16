@@ -111,7 +111,11 @@ def user_login(request):
 			else:
 				return HttpResponse('This account is not active.')
 		else:
-			return HttpResponse('Incorrect login details.')
+			return render(
+			request,
+			'guessing/login.html', {
+			'error_message': 'Incorrect login details.',
+			})
 	
 	else:
 		return render_to_response('guessing/login.html', {}, context)
@@ -140,7 +144,7 @@ def add_match(request):
 			# Creates set of match choices based on team1 and team2.
 			newmatch.matchchoice_set.create(winner_choice=f.team1,votes='0')
 			newmatch.matchchoice_set.create(winner_choice=f.team2,votes='0')
-			return index(request)
+			return render(request, 'guessing/detail.html', {'matchselect': newmatch})
 		else:
 			print(match_form.errors)
 	else:
