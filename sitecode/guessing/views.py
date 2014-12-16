@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.template import RequestContext
 from guessing.forms import UserForm
@@ -114,3 +114,7 @@ def user_login(request):
 	
 	else:
 		return render_to_response('guessing/login.html', {}, context)
+		
+def user_logout(request):
+	logout(request)
+	return HttpResponseRedirect('/guessing/')
