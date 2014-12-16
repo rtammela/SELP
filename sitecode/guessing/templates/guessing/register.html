@@ -1,0 +1,11 @@
+{% if registered %}
+	<p>Registration successful</p>
+{% else %}
+	<p>Register:</p>
+	<form id='user_form' method='post' action='/guessing/register/' enctype='multipart/form-data'>
+		{% csrf_token %}
+		<!-- as_p: wraps each elem. of form in a <p> element -->
+		{{ user_form.as_p }}
+		<input type='submit' name='submit' value='Register' />
+	</form>
+{% endif %}
