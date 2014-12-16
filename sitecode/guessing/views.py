@@ -9,7 +9,7 @@ from guessing.forms import UserForm, MatchForm
 from guessing.models import Matchselect, Matchchoice, Matchresult, Uservotes
 
 def index(request):
-	latest_question_list = Matchselect.objects.order_by('-match_date')[:5]
+	latest_question_list = Matchselect.objects.order_by('-match_date')[:10]
 	context = {'latest_question_list': latest_question_list}
 	return render(request, 'guessing/index.html', context)
 	
@@ -134,16 +134,15 @@ def add_match(request):
 		match_form = MatchForm(request.POST)
 		if match_form.is_valid():
 			# Temporarily saves form with data inputted by user, then saves form with the user as the creator of the match
-			f = match_form.save()
+			f = match_form.save(commit=False)
 			newmatch = Matchselect(game=f.game,team1=f.team1,team2=f.team2,match_date=f.match_date,creator=u)
 			newmatch.save()
 			# Creates set of match choices based on team1 and team2.
 			newmatch.matchchoice_set.create(winner_choice=f.team1,votes='0')
 			newmatch.matchchoice_set.create(winner_choice=f.team2,votes='0')
-			f.delete()
 			return index(request)
 		else:
-			print(form.errors)
+			print(match_form.errors)
 	else:
 		match_form=MatchForm()
 	return render_to_response('guessing/add_match.html', {'match_form' : match_form}, context)
