@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.template import RequestContext
+from django.utils import timezone
 from guessing.forms import UserForm, MatchForm
 
 from guessing.models import Matchselect, Matchchoice, Matchresult, Uservotes
@@ -22,12 +23,15 @@ def detail(request, matchselect_id):
 		# If so, take user directly to results page
 		if u in voters:
 			return render(request, 'guessing/results.html', {'matchselect': matchselect})
+	# Check if match has completed:
+	if matchselect.match_date < timezone.now():
+		return render( request, 'guessing/results.html', {'matchselect': matchselect, 'error_message': 'Match has closed.'})
 	# Otherwise, let user vote in the poll
 	return render(request, 'guessing/detail.html', {'matchselect': matchselect})
 	
 def results(request, matchselect_id):
 	matchselect = get_object_or_404(Matchselect, pk=matchselect_id)
-	return render(request, 'guessing/results.html', {'matchselect': matchselect, 'q': q})
+	return render(request, 'guessing/results.html', {'matchselect': matchselect})
 	
 def vote(request, matchselect_id):
 	p = get_object_or_404(Matchselect, pk=matchselect_id)
