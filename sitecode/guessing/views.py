@@ -14,7 +14,14 @@ def index(request):
 	return render(request, 'guessing/index.html', context)
 	
 def detail(request, matchselect_id):
+	# Check if user has already voted in this poll:
 	matchselect = get_object_or_404(Matchselect, pk=matchselect_id)
+	voters = [v.voter for v in Uservotes.objects.filter(match=matchselect)]
+	u = User.objects.get(username=request.user.username)
+	# If so, take user directly to results page
+	if u in voters:
+		return render(request, 'guessing/results.html', {'matchselect': matchselect})
+	# Otherwise, let user vote in the poll
 	return render(request, 'guessing/detail.html', {'matchselect': matchselect})
 	
 def results(request, matchselect_id):
