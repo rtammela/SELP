@@ -26,7 +26,14 @@ def match_browse_info():
 			tlist.append(t2)
 	# List of users sorted by points:
 	users = Userpoints.objects.order_by('-points')[:10]
-	context = {'browse_games' : games, 'browse_teams' : tlist, 'browse_users' : users}
+	accuracies = []
+	for u in users:
+		correct = u.points
+		total = u.votescompleted
+		correct_rate = (float(correct)/float(total))*100
+		accuracies.append(correct_rate)
+	browse_users = zip(users,accuracies)
+	context = {'browse_games' : games, 'browse_teams' : tlist, 'browse_users' : browse_users}
 	return context
 
 def index(request):
@@ -119,13 +126,19 @@ def profile(request, username):
 	else:
 		# User's winner_choice of all matches where user has voted are fetched:
 		uvotes = Uservotes.objects.filter(voter=u).values()
-				# User's vote point details gathered:
+		# User's vote point details gathered:
 		p = Userpoints.objects.filter(voter=u)
 		# Matches created by user gathered:
 		matches_created = Matchselect.objects.filter(creator=u)
 		if not p:
 			p = Userpoints(voter=u,totalvotes=0,points=0)
 			p.save()
+		# Accuracy for user calculated: Must use for loop (as 'p' is a QuerySet, which cannot be accessed direcly as e.g. p.points, and may be empty.)
+		correct_rate = 0
+		for x in p:
+			correct = x.points
+			total = x.votescompleted
+			correct_rate = (float(correct)/float(total))*100
 		gamesvoted = Uservotes.objects.filter(voter=u).values_list('match_id', flat=True)
 		# Match details of the corresponding matches are fetched, if userv voted in any games:
 		if not gamesvoted:
@@ -137,7 +150,7 @@ def profile(request, username):
 				gameinfo.append(a)
 			# Winner_choice is paired with match details for each match voted in:
 			voteinfolist = zip(uvotes,gameinfo)
-		context = {'u': u, 'voteinfolist' : voteinfolist, 'p' : p, 'matches_created' : matches_created, 'match_browse' : match_browse}
+		context = {'u': u, 'voteinfolist' : voteinfolist, 'p' : p, 'matches_created' : matches_created, 'correct_rate' : correct_rate, 'match_browse' : match_browse}
 		return render(request, 'guessing/profile.html', context)
 		
 def register(request):

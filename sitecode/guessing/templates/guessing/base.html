@@ -38,8 +38,8 @@
 			
 			<p>Player leaderboard:</p>
 			<ul>
-				{% for u in match_browse.browse_users %}
-					<li><a href='{% url 'profile' u.voter %}'>{{u.voter}}</a>: {{u.points}}</li>
+				{% for u, a in match_browse.browse_users %}
+					<li><a href='{% url 'profile' u.voter %}'>{{u.voter}}</a>: {{u.points}} {{a}}%</li>
 				{% endfor %}
 			</ul>
 		</div>
