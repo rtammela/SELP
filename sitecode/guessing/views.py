@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import permission_required
 from django.template import RequestContext
 from django.utils import timezone
+from django.db.models import Q
 from guessing.forms import UserForm, MatchForm
 import datetime
 
@@ -38,9 +39,8 @@ def games(request, game):
 	
 def teams(request, teams):
 	# Get list of all matches where the team has participated
-	game_matches = Matchselect.objects.filter(team1=teams)
-	games_as_t2 = Matchselect.objects.filter(team2=teams)
-	game_matches.append(games_as_t2)
+	game_matches = Matchselect.objects.filter( Q(team1=teams) | Q(team2=teams))
+	game_matches.order_by('-match_date')
 	context = {'game_matches' : game_matches}
 	return render(request, 'guessing/teams.html',context)
 	

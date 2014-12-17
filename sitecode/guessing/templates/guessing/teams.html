@@ -8,8 +8,16 @@
 	<a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a>
 {% endif %}
 
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<br><br>
 
+<p>{{game_matches.0.team1}}'s matches:</p>
+
+{% for g in game_matches %}
+        <li><a href="{% url 'detail' g.id %}">{{ g.game }}: {{ g.team1}} vs. {{ g.team2}}</a>
+		 {{ g.match_date.day }}/{{ g.match_date.month }}</li>
+{% endfor %}
 <br>
-<a href='{% url 'add_match' %}'>Create new match</a>
+
 
 
