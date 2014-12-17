@@ -8,14 +8,14 @@
 	<a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a>
 {% endif %}
 
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
 <p>{{ matchselect.game }}: {{ matchselect.team1}} vs. {{ matchselect.team2}}</p>
 <p>{{ matchselect.match_date.day }}/{{ matchselect.match_date.month }}/{{ matchselect.match_date.year }}</p>
 {% for matchchoice in matchselect.matchchoice_set.all %}
 	<!-- Lists each choice, number of votes, and pluralises # of votes -->
 	<li>{{ matchchoice.winner_choice }} {{ matchchoice.votes }} vote{{matchchoice.votes|pluralize }}</li>
 {% endfor %}
-
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
 {% if matchresult.0 %}
 	<p> Winner: {{ matchresult.0 }}!</p>

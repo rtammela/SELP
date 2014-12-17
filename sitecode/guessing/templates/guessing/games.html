@@ -9,6 +9,7 @@
 {% endif %}
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
 <br><br>
 {% for g in game_matches %}
         <li><a href="{% url 'detail' g.id %}">{{ g.game }}: {{ g.team1}} vs. {{ g.team2}}</a>

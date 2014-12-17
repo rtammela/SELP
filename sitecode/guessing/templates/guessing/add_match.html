@@ -7,8 +7,10 @@
 	<br>
 	<a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a>
 {% endif %}
-<p>Create new match:</p>
+
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<p>Create new match:</p>
 <form id='match_form' method='post' action='/guessing/add_match/' enctype='multipart/form-data'>
 	{% csrf_token %}
 	<!-- as_p: wraps each elem. of form in a <p> element -->
