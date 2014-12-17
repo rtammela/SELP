@@ -3,6 +3,7 @@ from django import forms
 from django.forms.extras.widgets import SelectDateWidget
 from guessing.models import Matchselect, Matchchoice
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 import datetime
 from django.utils import timezone
 			
@@ -14,18 +15,20 @@ class UserForm(forms.ModelForm):
 		fields = ('username', 'email', 'password')
 		
 class MatchForm(forms.ModelForm):
-	game = forms.CharField(max_length=200)
+	# Game name must be alphanumeric, containing at least one alphabetical character:
+	alphanumeric = RegexValidator(r'^(([0-9a-zA-Z])*[a-zA-Z]([0-9a-zA-Z])*)*$', 'Game name must be alphanumeric.')
+	game = forms.CharField(max_length=200, validators=[alphanumeric])
 	team1 = forms.CharField(max_length=50)
 	team2 = forms.CharField(max_length=50)
 	# SelectDateWidget ensures year cannot be in past
-	match_date = forms.DateField(widget=SelectDateWidget)
+	match_date = forms.DateField(widget=SelectDateWidget, initial=timezone.now())
 
 	def clean_match_date(self):
 		date = self.cleaned_data['match_date']
-		if (date < datetime.date()):
+		if (date < datetime.date.today()):
 			raise forms.ValidationError('The match date cannot be in the past.')
 		return date
-	
+
 	class Meta:
 		model = Matchselect
 		# Creator not inputted within form

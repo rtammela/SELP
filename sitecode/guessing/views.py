@@ -38,7 +38,7 @@ def detail(request, matchselect_id):
 		if u in voters:
 			return render(request, 'guessing/results.html', {'matchselect': matchselect})
 	# Check if match has completed:
-	if matchselect.match_date < datetime.date():
+	if matchselect.match_date < datetime.date.today():
 		return render( request, 'guessing/results.html', {'matchselect': matchselect, 'error_message': 'Match has closed.'})
 	# Otherwise, let user vote in the poll
 	return render(request, 'guessing/detail.html', {'matchselect': matchselect})
