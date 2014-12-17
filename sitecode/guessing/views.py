@@ -7,8 +7,11 @@ from django.contrib.auth.decorators import permission_required
 from django.template import RequestContext
 from django.utils import timezone
 from guessing.forms import UserForm, MatchForm
+import datetime
 
 from guessing.models import Matchselect, Matchchoice, Matchresult, Uservotes, Userpoints
+
+
 
 def index(request):
 	# 10 latest matches:
@@ -33,7 +36,7 @@ def detail(request, matchselect_id):
 		if u in voters:
 			return render(request, 'guessing/results.html', {'matchselect': matchselect})
 	# Check if match has completed:
-	if matchselect.match_date < timezone.now():
+	if matchselect.match_date < datetime.date():
 		return render( request, 'guessing/results.html', {'matchselect': matchselect, 'error_message': 'Match has closed.'})
 	# Otherwise, let user vote in the poll
 	return render(request, 'guessing/detail.html', {'matchselect': matchselect})

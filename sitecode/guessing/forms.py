@@ -18,15 +18,13 @@ class MatchForm(forms.ModelForm):
 	team1 = forms.CharField(max_length=50)
 	team2 = forms.CharField(max_length=50)
 	# SelectDateWidget ensures year cannot be in past
-	match_date = forms.DateField(widget=SelectDateWidget, initial=timezone.now())
+	match_date = forms.DateField(widget=SelectDateWidget)
 
-	def clean_match_date(self):
-		date = self.cleaned_data['match_date']
-		t = timezone.now()
-		# Lengthy way of checking, but only way to compare datetime to date without errors
-		if ((date.year == t.year ) and (date.month < t.month)) or ((date.year == t.year) and (date.month == t.month) and (date.day < t.day)):
-			raise forms.ValidationError('The match date cannot be in the past.')
-		return date
+	#def clean_match_date(self):
+	#	date = self.cleaned_data['match_date']
+	#	if (date < datetime.date()):
+	#		raise forms.ValidationError('The match date cannot be in the past.')
+	#	return date
 	
 	class Meta:
 		model = Matchselect

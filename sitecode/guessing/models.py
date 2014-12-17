@@ -8,7 +8,7 @@ class Matchselect(models.Model):
 	game = models.CharField(max_length=200)
 	team1 = models.CharField(max_length = 50)
 	team2 = models.CharField(max_length = 50)
-	match_date = models.DateTimeField('date of match')
+	match_date = models.DateField('date of match')
 	creator = models.ForeignKey(User)
 	def __str__(self):
 		return self.game
