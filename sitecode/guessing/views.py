@@ -8,7 +8,7 @@ from django.template import RequestContext
 from django.utils import timezone
 from guessing.forms import UserForm, MatchForm
 
-from guessing.models import Matchselect, Matchchoice, Matchresult, Uservotes
+from guessing.models import Matchselect, Matchchoice, Matchresult, Uservotes, Userpoints
 
 def index(request):
 	latest_question_list = Matchselect.objects.order_by('-match_date')[:10]
@@ -76,10 +76,15 @@ def profile(request, username):
 		gameinfo.append(a)
 	# Winner_choice is paired with match details for each match voted in:
 	voteinfolist = zip(uvotes,gameinfo)
+	p = Userpoints.objects.filter(voter=u)
+	if not p:
+		p = Userpoints(voter=u,totalvotes=0,points=0)
+		p.save()
 	return render(
 		request, 'guessing/profile.html', {
 		'u': u,
-		'voteinfolist' : voteinfolist
+		'voteinfolist' : voteinfolist,
+		'p' : p
 		})
 		
 def register(request):
@@ -176,15 +181,10 @@ def add_winner(request, matchselect_id):
 		voters = Uservotes.objects.filter(match=p)
 		for v in voters:
 			# If the user voted for the winner:
-			if v.winner_choice == selected_choice:
-				voterpoints = Userpoints.objects.filter(voter=v.voter)
-				if not voterpoints:
-					# Initialise new DB entry for the user if no DB entry exists (should never happen)
-					addpoints = Userpoints(voter=v.voter,totalvotes=1,points=1)
-					addpoints.save()
-				else:
-					voterpoints.points += 1
-					voterpoinds.save()
+			if v.winner_choice == str(selected_choice):
+				voterpoints = Userpoints.objects.get(voter=v.voter)
+				voterpoints.points += 1
+				voterpoints.save()
 		return HttpResponseRedirect(
 				reverse(
 				'results', 
