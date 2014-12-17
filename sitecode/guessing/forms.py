@@ -20,11 +20,11 @@ class MatchForm(forms.ModelForm):
 	# SelectDateWidget ensures year cannot be in past
 	match_date = forms.DateField(widget=SelectDateWidget)
 
-	#def clean_match_date(self):
-	#	date = self.cleaned_data['match_date']
-	#	if (date < datetime.date()):
-	#		raise forms.ValidationError('The match date cannot be in the past.')
-	#	return date
+	def clean_match_date(self):
+		date = self.cleaned_data['match_date']
+		if (date < datetime.date()):
+			raise forms.ValidationError('The match date cannot be in the past.')
+		return date
 	
 	class Meta:
 		model = Matchselect
