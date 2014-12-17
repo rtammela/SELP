@@ -16,6 +16,9 @@ class MatchAdmin(admin.ModelAdmin):
 
 admin.site.register(Matchselect, MatchAdmin)
 <<<<<<< HEAD
+<<<<<<< HEAD
 admin.site.register(Userpoints, PointsAdmin)
+=======
+>>>>>>> parent of b54ba86... added admin interface to manage users' points & votes (just in case ever necessary)
 =======
 >>>>>>> parent of b54ba86... added admin interface to manage users' points & votes (just in case ever necessary)
