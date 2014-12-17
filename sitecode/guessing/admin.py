@@ -1,5 +1,5 @@
 from django.contrib import admin
-from guessing.models import Matchselect, Matchchoice, Matchresult
+from guessing.models import Matchselect, Matchchoice, Matchresult, Userpoints
 
 class ResultInline(admin.TabularInline):
 	model = Matchresult
@@ -14,4 +14,9 @@ class MatchAdmin(admin.ModelAdmin):
 	]
 	inlines = [ResultInline]
 
+class PointsAdmin(admin.ModelAdmin):
+	list_display = ('voter', 'totalvotes', 'points')
+	list_filter = ['points']
+	
 admin.site.register(Matchselect, MatchAdmin)
+admin.site.register(Userpoints, PointsAdmin)
