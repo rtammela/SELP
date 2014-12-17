@@ -8,10 +8,26 @@
 	<a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a>
 {% endif %}
 
-<p>{{ u.username }}'s votes:</p>
-{% for uservotes,g in voteinfolist %}
-	<!-- Winner choice and match details are unzipped, used for display of relevant details -->
-	<li><a href="{% url 'results' g.0.id%}">{{g.0}}: {{g.0.team1}} vs. {{g.0.team2}}</a> {{ g.0.match_date.day }}/{{ g.0.match_date.month }}/{{ g.0.match_date.year }}
-		 {{u.username}} voted: {{uservotes.winner_choice}}</li>
-{% endfor %}
+{% if voteinfolist.0 %}
+	<p>{{ u.username }}'s votes:</p>
+	{% for uservotes,g in voteinfolist %}
+		<!-- Winner choice and match details are unzipped, used for display of relevant details -->
+		<li><a href="{% url 'results' g.0.id%}">{{g.0}}: {{g.0.team1}} vs. {{g.0.team2}}</a> {{ g.0.match_date.day }}/{{ g.0.match_date.month }}/{{ g.0.match_date.year }}
+			{{u.username}} voted: {{uservotes.winner_choice}}</li>
+	{% endfor %}
+{% else %}
+	<p>{{ u.username }} has made no votes!</p>
+{% endif %}
+
+
+{% if matches_created %}
+	<p>{{ u.username }}'s matches created:</p>
+	{% for m in matches_created %}
+		<!-- Winner choice and match details are unzipped, used for display of relevant details -->
+		<li><a href="{% url 'detail' m.id%}">{{m.game}}: {{m.team1}} vs. {{m.team2}}</a> {{ m.match_date.day }}/{{ m.match_date.month }}/{{ m.match_date.year }}</li>
+	{% endfor %}
+{% else %}
+	<p>{{ u.username }} has created no matches.</p>
+{% endif %}
+
 <p>Total times voted: {{p.0.totalvotes}} Points earned:{{p.0.points}}</p>

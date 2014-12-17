@@ -88,7 +88,10 @@ def profile(request, username):
 			gameinfo.append(a)
 		# Winner_choice is paired with match details for each match voted in:
 		voteinfolist = zip(uvotes,gameinfo)
+		# User's vote point details gathered:
 		p = Userpoints.objects.filter(voter=u)
+		# Matches created by user gathered:
+		matches_created = Matchselect.objects.filter(creator=u)
 		if not p:
 			p = Userpoints(voter=u,totalvotes=0,points=0)
 			p.save()
@@ -96,7 +99,8 @@ def profile(request, username):
 			request, 'guessing/profile.html', {
 			'u': u,
 			'voteinfolist' : voteinfolist,
-			'p' : p
+			'p' : p,
+			'matches_created' : matches_created
 			})
 		
 def register(request):
