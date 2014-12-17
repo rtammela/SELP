@@ -37,7 +37,10 @@ def games(request, game):
 	return render(request, 'guessing/games.html', context)
 	
 def teams(request, teams):
+	# Get list of all matches where the team has participated
 	game_matches = Matchselect.objects.filter(team1=teams)
+	games_as_t2 = Matchselect.objects.filter(team2=teams)
+	game_matches.append(games_as_t2)
 	context = {'game_matches' : game_matches}
 	return render(request, 'guessing/teams.html',context)
 	

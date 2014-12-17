@@ -14,5 +14,5 @@ urlpatterns = patterns('',
 	url(r'^logout/$', views.user_logout, name='logout'),
 	url(r'^add_match/$', views.add_match, name='add_match'),
 	url(r'^teams/(?P<teams>\w+d*)/$', views.teams, name='teams'),
-	url(r'^(?P<game>\w+)/$', views.games, name='games'),
+	url(r'^games/(?P<game>\w+d*)/$', views.games, name='games'),
 )
