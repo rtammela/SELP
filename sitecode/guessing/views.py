@@ -11,9 +11,17 @@ from guessing.forms import UserForm, MatchForm
 from guessing.models import Matchselect, Matchchoice, Matchresult, Uservotes, Userpoints
 
 def index(request):
+	# 10 latest matches:
 	latest_question_list = Matchselect.objects.order_by('-match_date')[:10]
-	context = {'latest_question_list': latest_question_list}
+	# List of games for which matches exist:
+	games = Matchselect.objects.distinct().values_list('game',flat=True)
+	context = {'latest_question_list': latest_question_list, 'games' : games}
 	return render(request, 'guessing/index.html', context)
+	
+def games(request, game):
+	game_matches = Matchselect.objects.filter(game=game)
+	context = {'game_matches' : game_matches}
+	return render(request, 'guessing/games.html', context)
 	
 def detail(request, matchselect_id):
 	matchselect = get_object_or_404(Matchselect, pk=matchselect_id)
@@ -75,8 +83,9 @@ def profile(request, username):
 		u = User.objects.get(username=username)
 	except (KeyError, User.DoesNotExist):
 		latest_question_list = Matchselect.objects.order_by('-match_date')[:10]
+		games = Matchselect.objects.distinct().values_list('game',flat=True)
 		return render(request, 'guessing/index.html', {'error_message' : 'User by that name does not exist.',
-		'latest_question_list' : latest_question_list})
+		'latest_question_list' : latest_question_list, 'games' : games})
 	else:
 		# User's winner_choice of all matches where user has voted are fetched:
 		uvotes = Uservotes.objects.filter(voter=u).values()

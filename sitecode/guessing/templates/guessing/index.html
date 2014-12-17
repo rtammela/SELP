@@ -23,3 +23,8 @@
 {% endif %}
 
 <a href='{% url 'add_match' %}'>Create new match</a>
+
+<p>Browse matches by game:</p>
+{% for g in games %}
+	<a href='{% url 'games' g %}'>{{ g }}</a>
+{% endfor %}
