@@ -17,13 +17,12 @@
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-{% for w in matchselect.matchresult_set.all %}
-	{% if w.winner %}
-		<p> Winner: {{ w.winner }}</p>
-	{% else %}
-		<p> Winner: TBA</p>
-		{% if perms.guessing.add_userpoints %}
-			<a href='{% url 'add_winner' matchselect.id %}'>Select winner</a>
-		{% endif %}
+{% if matchresult.0 %}
+	<p> Winner: {{ matchresult.0 }}!</p>
+{% else %}
+	<p> Winner: TBA</p>
+	{% if perms.guessing.add_userpoints %}
+		<a href='{% url 'add_winner' matchselect.id %}'>Select winner</a>
 	{% endif %}
-{% endfor %}
+{% endif %}
+

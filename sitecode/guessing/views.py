@@ -30,22 +30,24 @@ def games(request, game):
 	
 def detail(request, matchselect_id):
 	matchselect = get_object_or_404(Matchselect, pk=matchselect_id)
+	matchresult = Matchresult.objects.filter(match=matchselect_id)
 	# Check if user (if any are logged in) has already voted in this poll:
 	if request.user.is_authenticated():
 		voters = [v.voter for v in Uservotes.objects.filter(match=matchselect)]
 		u = User.objects.get(username=request.user.username)
 		# If so, take user directly to results page
 		if u in voters:
-			return render(request, 'guessing/results.html', {'matchselect': matchselect})
+			return render(request, 'guessing/results.html', {'matchselect': matchselect, 'matchresult' : matchresult})
 	# Check if match has completed:
 	if matchselect.match_date < datetime.date.today():
-		return render( request, 'guessing/results.html', {'matchselect': matchselect, 'error_message': 'Match has closed.'})
+		return render( request, 'guessing/results.html', {'matchselect': matchselect, 'matchresult' : matchresult, 'error_message': 'Match has closed.'})
 	# Otherwise, let user vote in the poll
 	return render(request, 'guessing/detail.html', {'matchselect': matchselect})
 	
 def results(request, matchselect_id):
 	matchselect = get_object_or_404(Matchselect, pk=matchselect_id)
-	return render(request, 'guessing/results.html', {'matchselect': matchselect})
+	matchresult = Matchresult.objects.filter(match=matchselect_id)
+	return render(request, 'guessing/results.html', {'matchselect': matchselect, 'matchresult' : matchresult})
 	
 def vote(request, matchselect_id):
 	p = get_object_or_404(Matchselect, pk=matchselect_id)
@@ -221,6 +223,9 @@ def add_winner(request, matchselect_id):
 		# Go through all users who voted in this match
 		voters = Uservotes.objects.filter(match=p)
 		for v in voters:
+			votercount = Userpoints.objects.get(voter=v.voter)
+			votercount.votescompleted =+ 1
+			votercount.save()
 			# If the user voted for the winner, increment points by 1:
 			if v.winner_choice == str(selected_choice):
 				voterpoints = Userpoints.objects.get(voter=v.voter)
