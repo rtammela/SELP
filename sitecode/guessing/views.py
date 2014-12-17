@@ -18,15 +18,28 @@ def index(request):
 	latest_question_list = Matchselect.objects.order_by('-match_date')[:10]
 	# List of games for which matches exist:
 	games = Matchselect.objects.distinct().values_list('game',flat=True)
+	# List of teams participating in any matches for any games:
+	teams = Matchselect.objects.distinct().values_list('team1','team2')
+	tlist = []
+	for t1,t2 in teams:
+		if t1 not in tlist:
+			tlist.append(t1)
+		if t2 not in tlist:
+			tlist.append(t2)
 	# List of users sorted by points:
 	users = Userpoints.objects.order_by('-points')[:10]
-	context = {'latest_question_list': latest_question_list, 'games' : games, 'users' : users}
+	context = {'latest_question_list': latest_question_list, 'games' : games, 'teams' : tlist, 'users' : users}
 	return render(request, 'guessing/index.html', context)
 	
 def games(request, game):
 	game_matches = Matchselect.objects.filter(game=game)
 	context = {'game_matches' : game_matches}
 	return render(request, 'guessing/games.html', context)
+	
+def teams(request, teams):
+	game_matches = Matchselect.objects.filter(team1=teams)
+	context = {'game_matches' : game_matches}
+	return render(request, 'guessing/teams.html',context)
 	
 def detail(request, matchselect_id):
 	matchselect = get_object_or_404(Matchselect, pk=matchselect_id)

@@ -15,11 +15,11 @@ class UserForm(forms.ModelForm):
 		fields = ('username', 'email', 'password')
 		
 class MatchForm(forms.ModelForm):
-	# Game name must be alphanumeric, containing at least one alphabetical character:
+	# Game name and team names must be alphanumeric, containing at least one alphabetical character:
 	alphanumeric = RegexValidator(r'^(([0-9a-zA-Z])*[a-zA-Z]([0-9a-zA-Z])*)*$', 'Game name must be alphanumeric.')
 	game = forms.CharField(max_length=200, validators=[alphanumeric])
-	team1 = forms.CharField(max_length=50)
-	team2 = forms.CharField(max_length=50)
+	team1 = forms.CharField(max_length=50, validators=[alphanumeric])
+	team2 = forms.CharField(max_length=50, validators=[alphanumeric])
 	# SelectDateWidget ensures year cannot be in past
 	match_date = forms.DateField(widget=SelectDateWidget, initial=timezone.now())
 	

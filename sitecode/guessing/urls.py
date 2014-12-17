@@ -13,5 +13,6 @@ urlpatterns = patterns('',
 	url(r'^login/$', views.user_login, name='login'),
 	url(r'^logout/$', views.user_logout, name='logout'),
 	url(r'^add_match/$', views.add_match, name='add_match'),
+	url(r'^teams/(?P<teams>\w+d*)/$', views.teams, name='teams'),
 	url(r'^(?P<game>\w+)/$', views.games, name='games'),
 )
