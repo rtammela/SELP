@@ -164,6 +164,14 @@ def add_match(request):
 @permission_required('guessing.add_userpoints')
 def add_winner(request, matchselect_id):
 	p = get_object_or_404(Matchselect, pk=matchselect_id)
+	winner_exists = Matchresult.objects.filter(match=p)
+	if winner_exists:
+		return render(
+			request, 
+			'guessing/results.html', {
+			'matchselect': p,
+			'error_message': "Winner has already been added.",
+		})
 	try:
 		selected_choice = p.matchchoice_set.get(pk=request.POST['matchchoice'])
 	except (KeyError, Matchchoice.DoesNotExist):
@@ -180,7 +188,7 @@ def add_winner(request, matchselect_id):
 		# Go through all users who voted in this match
 		voters = Uservotes.objects.filter(match=p)
 		for v in voters:
-			# If the user voted for the winner:
+			# If the user voted for the winner, increment points by 1:
 			if v.winner_choice == str(selected_choice):
 				voterpoints = Userpoints.objects.get(voter=v.voter)
 				voterpoints.points += 1
