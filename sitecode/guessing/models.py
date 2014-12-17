@@ -38,3 +38,4 @@ class Userpoints(models.Model):
 	voter = models.ForeignKey(User)
 	totalvotes = models.IntegerField(default=0)
 	points = models.IntegerField(default=0)
+	votescompleted = models.IntegerField(default=0)

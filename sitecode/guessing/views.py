@@ -19,7 +19,7 @@ def index(request):
 	# List of games for which matches exist:
 	games = Matchselect.objects.distinct().values_list('game',flat=True)
 	# List of users sorted by points:
-	users = Userpoints.objects.order_by('-points')
+	users = Userpoints.objects.order_by('-points')[:10]
 	context = {'latest_question_list': latest_question_list, 'games' : games, 'users' : users}
 	return render(request, 'guessing/index.html', context)
 	
