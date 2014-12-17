@@ -1,0 +1,15 @@
+p {
+    font-family: "Arial";
+    font-size: 12px;
+}
+div.top_bar {
+	background-color: #e0ffff;
+}
+div.side_bar{
+	position:fixed;
+	right: 5px;
+	top: 5px;
+	margin: 0;
+	padding: 0;
+	background-color: #b0c4de;
+}

@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 
 <html>
+	{% load static %}
     <head>
         <title>{% block title %}The Guessing Game{% endblock %}</title>
+		<link rel='stylesheet' type='text/css' href="{% static 'style.css' %}" />
     </head>
 
     <body>
-		<div>
-			<a href="{% url 'index' %}">The Guessing Game</a>
-		</div>
-		
-		<div>
+		<div class = 'top_bar'>
+			<h1><a href="{% url 'index' %}">The Guessing Game</a></h1>
+
 			{% if user.is_authenticated %}
 				<p>Welcome, <a href="{% url 'profile' user.username %}">{{ user.username }}</a>!</p>
 				<a href="{% url 'logout' %}">Logout</a>
@@ -25,7 +25,7 @@
 			{% block body_block %}<!-- Page-specific content here -->{% endblock %}
 		</div>
 		
-		<div>
+		<div class = 'side_bar'>
 			<p>Browse matches by game:</p>
 			{% for g in match_browse.browse_games %}
 				<a href='{% url 'games' g %}'>{{ g }}</a>
