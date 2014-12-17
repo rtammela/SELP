@@ -24,5 +24,24 @@
 		<div>
 			{% block body_block %}<!-- Page-specific content here -->{% endblock %}
 		</div>
+		
+		<div>
+			<p>Browse matches by game:</p>
+			{% for g in match_browse.browse_games %}
+				<a href='{% url 'games' g %}'>{{ g }}</a>
+			{% endfor %}
+			
+			<p>Browse matches by team:</p>
+			{% for t in match_browse.browse_teams %}
+				<a href='{% url 'teams' t %}'>{{ t }}</a>
+			{% endfor %}
+			
+			<p>Player leaderboard:</p>
+			<ul>
+				{% for u in match_browse.browse_users %}
+					<li><a href='{% url 'profile' u.voter %}'>{{u.voter}}</a>: {{u.points}}</li>
+				{% endfor %}
+			</ul>
+		</div>
     </body>
 </html>

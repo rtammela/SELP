@@ -15,20 +15,5 @@
 
 	<a href='{% url 'add_match' %}'>Create new match</a>
 	
-	<p>Browse matches by game:</p>
-	{% for g in games %}
-		<a href='{% url 'games' g %}'>{{ g }}</a>
-	{% endfor %}
-	
-	<p>Browse matches by team:</p>
-	{% for t in teams %}
-		<a href='{% url 'teams' t %}'>{{ t }}</a>
-	{% endfor %}
-	
-	<p>Player leaderboard:</p>
-	<ul>
-		{% for u in users %}
-			<li><a href='{% url 'profile' u.voter %}'>{{u.voter}}</a>: {{u.points}}</li>
-		{% endfor %}
-	</ul>
+
 {% endblock %}

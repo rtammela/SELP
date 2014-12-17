@@ -12,11 +12,8 @@ import datetime
 
 from guessing.models import Matchselect, Matchchoice, Matchresult, Uservotes, Userpoints
 
-
-
-def index(request):
-	# 10 latest matches:
-	latest_question_list = Matchselect.objects.order_by('-match_date')[:10]
+# Common information (user leaderboard, browsing by game/team) used by all pages
+def match_browse_info():
 	# List of games for which matches exist:
 	games = Matchselect.objects.distinct().values_list('game',flat=True)
 	# List of teams participating in any matches for any games:
@@ -29,22 +26,32 @@ def index(request):
 			tlist.append(t2)
 	# List of users sorted by points:
 	users = Userpoints.objects.order_by('-points')[:10]
-	context = {'latest_question_list': latest_question_list, 'games' : games, 'teams' : tlist, 'users' : users}
+	context = {'browse_games' : games, 'browse_teams' : tlist, 'browse_users' : users}
+	return context
+
+def index(request):
+	match_browse = match_browse_info()
+	# 10 latest matches:
+	latest_question_list = Matchselect.objects.order_by('-match_date')[:10]
+	context = {'latest_question_list' : latest_question_list, 'match_browse' : match_browse}
 	return render(request, 'guessing/index.html', context)
 	
 def games(request, game):
+	match_browse = match_browse_info()
 	game_matches = Matchselect.objects.filter(game=game)
-	context = {'game_matches' : game_matches}
+	context = {'game_matches' : game_matches, 'match_browse' : match_browse}
 	return render(request, 'guessing/games.html', context)
 	
 def teams(request, teams):
+	match_browse = match_browse_info()
 	# Get list of all matches where the team has participated
 	game_matches = Matchselect.objects.filter( Q(team1=teams) | Q(team2=teams))
 	game_matches.order_by('-match_date')
-	context = {'game_matches' : game_matches}
+	context = {'game_matches' : game_matches, 'match_browse' : match_browse}
 	return render(request, 'guessing/teams.html',context)
 	
 def detail(request, matchselect_id):
+	match_browse = match_browse_info()
 	matchselect = get_object_or_404(Matchselect, pk=matchselect_id)
 	matchresult = Matchresult.objects.filter(match=matchselect_id)
 	# Check if user (if any are logged in) has already voted in this poll:
@@ -53,30 +60,32 @@ def detail(request, matchselect_id):
 		u = User.objects.get(username=request.user.username)
 		# If so, take user directly to results page
 		if u in voters:
-			return render(request, 'guessing/results.html', {'matchselect': matchselect, 'matchresult' : matchresult})
+			context = {'matchselect': matchselect, 'matchresult' : matchresult, 'match_browse' : match_browse}
+			return render(request, 'guessing/results.html', context)
 	# Check if match has completed:
 	if matchselect.match_date < datetime.date.today():
-		return render( request, 'guessing/results.html', {'matchselect': matchselect, 'matchresult' : matchresult, 'error_message': 'Match has closed.'})
+		context = {'matchselect': matchselect, 'matchresult' : matchresult, 'match_browse' : match_browse, 'error_message': 'Match has closed.'}
+		return render( request, 'guessing/results.html', context)
 	# Otherwise, let user vote in the poll
-	return render(request, 'guessing/detail.html', {'matchselect': matchselect})
+	context = {'matchselect': matchselect, 'match_browse' : match_browse}
+	return render(request, 'guessing/detail.html', context)
 	
 def results(request, matchselect_id):
+	match_browse = match_browse_info()
 	matchselect = get_object_or_404(Matchselect, pk=matchselect_id)
 	matchresult = Matchresult.objects.filter(match=matchselect_id)
-	return render(request, 'guessing/results.html', {'matchselect': matchselect, 'matchresult' : matchresult})
+	context = {'matchselect': matchselect, 'matchresult' : matchresult, 'match_browse' : match_browse}
+	return render(request, 'guessing/results.html', context)
 	
 def vote(request, matchselect_id):
+	match_browse = match_browse_info()
 	p = get_object_or_404(Matchselect, pk=matchselect_id)
 	try:
 		selected_choice = p.matchchoice_set.get(pk=request.POST['matchchoice'])
 	except (KeyError, Matchchoice.DoesNotExist):
 		# Redisplay the question voting form if no winner_choice selected
-		return render(
-			request, 
-			'guessing/detail.html', {
-			'matchselect': p,
-			'error_message': "You didn't select a choice.",
-		})
+		context = {'matchselect': p, 'match_browse' : match_browse, 'error_message': "You didn't select a choice.",}
+		return render(request, 'guessing/detail.html', context)
 	else:
 		# Only logged in users can vote
 		if request.user.is_authenticated():
@@ -94,21 +103,19 @@ def vote(request, matchselect_id):
 			# Always return an HttpResponseRedirect after successfully dealing
 			# with POST data. This prevents data from being posted twice if a
 			# user hits the Back button.
-			return HttpResponseRedirect(
-				reverse(
-				'results', 
-				args=(p.id,)))
+			return HttpResponseRedirect(reverse('results', args=(p.id,)))
 		else:
 			return HttpResponse('Must be logged in to vote')
 
 def profile(request, username):
+	match_browse = match_browse_info()
 	try:
 		u = User.objects.get(username=username)
 	except (KeyError, User.DoesNotExist):
 		latest_question_list = Matchselect.objects.order_by('-match_date')[:10]
 		games = Matchselect.objects.distinct().values_list('game',flat=True)
-		return render(request, 'guessing/index.html', {'error_message' : 'User by that name does not exist.',
-		'latest_question_list' : latest_question_list, 'games' : games})
+		context = {'error_message' : 'User by that name does not exist.', 'latest_question_list' : latest_question_list, 'games' : games, 'match_browse' : match_browse}
+		return render(request, 'guessing/index.html', context )
 	else:
 		# User's winner_choice of all matches where user has voted are fetched:
 		uvotes = Uservotes.objects.filter(voter=u).values()
@@ -130,15 +137,11 @@ def profile(request, username):
 				gameinfo.append(a)
 			# Winner_choice is paired with match details for each match voted in:
 			voteinfolist = zip(uvotes,gameinfo)
-		return render(
-			request, 'guessing/profile.html', {
-			'u': u,
-			'voteinfolist' : voteinfolist,
-			'p' : p,
-			'matches_created' : matches_created
-			})
+		context = {'u': u, 'voteinfolist' : voteinfolist, 'p' : p, 'matches_created' : matches_created, 'match_browse' : match_browse}
+		return render(request, 'guessing/profile.html', context)
 		
 def register(request):
+	match_browse = match_browse_info()
 	context = RequestContext(request)
 	registered = False
 	if request.method == 'POST':
@@ -152,19 +155,15 @@ def register(request):
 			print(user_form.errors)
 	else:
 		user_form = UserForm()
-	return render_to_response(
-		'guessing/register.html',{
-		'user_form' : user_form,
-		'registered' : registered
-		},context)
+	return render_to_response('guessing/register.html',{'user_form' : user_form,'registered' : registered,'match_browse' : match_browse},context)
 		
 def user_login(request):
+	match_browse = match_browse_info()
 	context = RequestContext(request)
 	if request.method == 'POST':
 		username = request.POST['username']
 		password = request.POST['password']
-		user = authenticate(username=username, password=password)
-		
+		user = authenticate(username=username, password=password)		
 		if user:
 			if user.is_active:
 				login(request, user)
@@ -172,27 +171,20 @@ def user_login(request):
 			else:
 				return HttpResponse('This account is not active.')
 		else:
-			return render(
-			request,
-			'guessing/login.html', {
-			'error_message': 'Incorrect login details.',
-			})
-	
+			return render(request,'guessing/login.html', {'error_message': 'Incorrect login details.',})
 	else:
-		return render_to_response('guessing/login.html', {}, context)
+		return render_to_response('guessing/login.html', {'match_browse' : match_browse}, context)
 		
 def user_logout(request):
 	logout(request)
 	return HttpResponseRedirect('/guessing/')
 	
 def add_match(request):
+	match_browse = match_browse_info()
 	# First checks if user is logged in
 	if not request.user.is_authenticated():
-		return render(
-			request, 
-			'guessing/add_match.html', {
-			'error_message': "You must be logged in to create a new match.",
-		})
+		context = {'match_browse' : match_browse, 'error_message': "You must be logged in to create a new match.",}
+		return render(request, 'guessing/add_match.html', context)
 	context = RequestContext(request)
 	u = User.objects.get(username=request.user.username)
 	if request.method == 'POST':
@@ -210,29 +202,22 @@ def add_match(request):
 			print(match_form.errors)
 	else:
 		match_form=MatchForm()
-	return render_to_response('guessing/add_match.html', {'match_form' : match_form}, context)
+	return render_to_response('guessing/add_match.html', {'match_form' : match_form, 'match_browse' : match_browse}, context)
 	
 @permission_required('guessing.add_userpoints')
 def add_winner(request, matchselect_id):
+	match_browse = match_browse_info()
 	p = get_object_or_404(Matchselect, pk=matchselect_id)
 	winner_exists = Matchresult.objects.filter(match=p)
 	if winner_exists:
-		return render(
-			request, 
-			'guessing/results.html', {
-			'matchselect': p,
-			'error_message': "Winner has already been added.",
-		})
+		context = {'matchselect': p, 'match_browse' : match_browse,'error_message': "Winner has already been added.",}
+		return render(request, 'guessing/results.html', context )
 	try:
 		selected_choice = p.matchchoice_set.get(pk=request.POST['matchchoice'])
 	except (KeyError, Matchchoice.DoesNotExist):
 		# Redisplay the question voting form if no winner_choice selected
-		return render(
-			request, 
-			'guessing/add_winner.html', {
-			'matchselect': p,
-			'error_message': "You didn't select a choice.",
-		})
+		context = {'matchselect': p, 'match_browse' : match_browse,'error_message': "You didn't select a winner.",}
+		return render(request, 'guessing/add_winner.html', context)
 	else:
 		w = Matchresult(match=p,winner=selected_choice)
 		w.save()
@@ -247,7 +232,4 @@ def add_winner(request, matchselect_id):
 				voterpoints = Userpoints.objects.get(voter=v.voter)
 				voterpoints.points += 1
 				voterpoints.save()
-		return HttpResponseRedirect(
-				reverse(
-				'results', 
-				args=(p.id,)))
+		return HttpResponseRedirect(reverse('results', args=(p.id,)))
