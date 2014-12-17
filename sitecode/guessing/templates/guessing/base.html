@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>{% block title %}The Guessing Game{% endblock %}</title>
+    </head>
+
+    <body>
+		<div>
+			<a href="{% url 'index' %}">The Guessing Game</a>
+		</div>
+		
+		<div>
+			{% if user.is_authenticated %}
+				<p>Welcome, <a href="{% url 'profile' user.username %}">{{ user.username }}</a>!</p>
+				<a href="{% url 'logout' %}">Logout</a>
+			{% else %}
+				<br>
+				<a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a>
+			{% endif %}
+			{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+		</div>
+		
+		<div>
+			{% block body_block %}<!-- Page-specific content here -->{% endblock %}
+		</div>
+    </body>
+</html>

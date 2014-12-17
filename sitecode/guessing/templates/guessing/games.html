@@ -1,20 +1,9 @@
-<a href="{% url 'index' %}">The Guessing Game</a>
-
-{% if user.is_authenticated %}
-	<p>Welcome, <a href="{% url 'profile' user.username %}">{{ user.username }}</a>!</p>
-	<a href="{% url 'logout' %}">Logout</a>
-{% else %}
-	<br>
-	<a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a>
-{% endif %}
-
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-
-<br><br>
-{% for g in game_matches %}
-        <li><a href="{% url 'detail' g.id %}">{{ g.game }}: {{ g.team1}} vs. {{ g.team2}}</a>
-		 {{ g.match_date.day }}/{{ g.match_date.month }}</li>
-{% endfor %}
-<br>
-
-
+{% extends 'guessing/base.html' %}
+{% block title %}The Guessing Game - {{game_matches.0.game}}{% endblock %}
+{% block body_block %}
+	<p>{{game_matches.0.game}} matches:</p>
+	{% for g in game_matches %}
+			<li><a href="{% url 'detail' g.id %}">{{ g.game }}: {{ g.team1}} vs. {{ g.team2}}</a>
+			 {{ g.match_date.day }}/{{ g.match_date.month }}</li>
+	{% endfor %}
+{% endblock %}

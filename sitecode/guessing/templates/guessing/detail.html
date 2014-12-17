@@ -1,31 +1,23 @@
-<a href="{% url 'index' %}">The Guessing Game</a>
+{% extends 'guessing/base.html' %}
+{% block title %}The Guessing Game - Match Details{% endblock %}
+{% block body_block %}
+	<p>{{ matchselect.game }}: {{ matchselect.team1}} vs. {{ matchselect.team2}}</p>
+	<p>{{ matchselect.match_date.day }}/{{ matchselect.match_date.month }}/{{ matchselect.match_date.year }}</p>
 
-{% if user.is_authenticated %}
-	<p>Welcome, <a href="{% url 'profile' user.username %}">{{ user.username }}</a>!</p>
-	<a href="{% url 'logout' %}">Logout</a>
-{% else %}
-	<br>
-	<a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a>
-{% endif %}
-
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-
-<p>{{ matchselect.game }}: {{ matchselect.team1}} vs. {{ matchselect.team2}}</p>
-<p>{{ matchselect.match_date.day }}/{{ matchselect.match_date.month }}/{{ matchselect.match_date.year }}</p>
-
-{% if user.is_authenticated %}
-	<form action="{% url 'vote' matchselect.id %}" method="post">
-	{% csrf_token %}
-	{% for matchchoice in matchselect.matchchoice_set.all %}
-		<input type="radio" name="matchchoice" id="matchchoice{{ forloop.counter }}" value="{{ matchchoice.id }}" />
-		<label for="matchchoice{{ forloop.counter }}">{{ matchchoice.winner_choice }}</label><br />
-	{% endfor %}
-	<input type="submit" value="Vote" />
-	</form>
-{% else %}
-	{% csrf_token %}
-	{% for matchchoice in matchselect.matchchoice_set.all %}
-		<label for="matchchoice{{ forloop.counter }}">{{ matchchoice.winner_choice }}</label><br />
-	{% endfor %}
-	<p>Must be logged in to vote.</p>
-{% endif %}
+	{% if user.is_authenticated %}
+		<form action="{% url 'vote' matchselect.id %}" method="post">
+		{% csrf_token %}
+		{% for matchchoice in matchselect.matchchoice_set.all %}
+			<input type="radio" name="matchchoice" id="matchchoice{{ forloop.counter }}" value="{{ matchchoice.id }}" />
+			<label for="matchchoice{{ forloop.counter }}">{{ matchchoice.winner_choice }}</label><br />
+		{% endfor %}
+		<input type="submit" value="Vote" />
+		</form>
+	{% else %}
+		{% csrf_token %}
+		{% for matchchoice in matchselect.matchchoice_set.all %}
+			<label for="matchchoice{{ forloop.counter }}">{{ matchchoice.winner_choice }}</label><br />
+		{% endfor %}
+		<p>Must be logged in to vote.</p>
+	{% endif %}
+{% endblock %}

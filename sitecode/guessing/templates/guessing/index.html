@@ -1,42 +1,34 @@
-<a href="{% url 'index' %}">The Guessing Game</a>
+{% extends 'guessing/base.html' %}
+{% block title %}The Guessing Game{% endblock %}
+{% block body_block %}
+	{% if latest_question_list %}
+		<p>Latest matches:</p>
+		<ul>
+		{% for matchselect in latest_question_list %}
+			<li><a href="{% url 'detail' matchselect.id %}">{{ matchselect.game }}: {{ matchselect.team1}} vs. {{ matchselect.team2}}</a>
+			{{ matchselect.match_date.day }}/{{ matchselect.match_date.month }}</li>
+		{% endfor %}
+		</ul>
+	{% else %}
+		<p>No matches are available.</p>
+	{% endif %}
 
-{% if user.is_authenticated %}
-	<p>Welcome, <a href="{% url 'profile' user.username %}">{{ user.username }}</a>!</p>
-	<a href="{% url 'logout' %}">Logout</a>
-{% else %}
-	<br>
-	<a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a>
-{% endif %}
-
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-
-{% if latest_question_list %}
-	<p>Latest matches:</p>
-    <ul>
-    {% for matchselect in latest_question_list %}
-        <li><a href="{% url 'detail' matchselect.id %}">{{ matchselect.game }}: {{ matchselect.team1}} vs. {{ matchselect.team2}}</a>
-		 {{ matchselect.match_date.day }}/{{ matchselect.match_date.month }}</li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No matches are available.</p>
-{% endif %}
-
-<a href='{% url 'add_match' %}'>Create new match</a>
-
-<p>Browse matches by game:</p>
-{% for g in games %}
-	<a href='{% url 'games' g %}'>{{ g }}</a>
-{% endfor %}
-
-<p>Browse matches by team:</p>
-{% for t in teams %}
-	<a href='{% url 'teams' t %}'>{{ t }}</a>
-{% endfor %}
-
-<p>Player leaderboard:</p>
-<ul>
-	{% for u in users %}
-		<li><a href='{% url 'profile' u.voter %}'>{{u.voter}}</a>: {{u.points}}</li>
+	<a href='{% url 'add_match' %}'>Create new match</a>
+	
+	<p>Browse matches by game:</p>
+	{% for g in games %}
+		<a href='{% url 'games' g %}'>{{ g }}</a>
 	{% endfor %}
-</ul>
+	
+	<p>Browse matches by team:</p>
+	{% for t in teams %}
+		<a href='{% url 'teams' t %}'>{{ t }}</a>
+	{% endfor %}
+	
+	<p>Player leaderboard:</p>
+	<ul>
+		{% for u in users %}
+			<li><a href='{% url 'profile' u.voter %}'>{{u.voter}}</a>: {{u.points}}</li>
+		{% endfor %}
+	</ul>
+{% endblock %}
