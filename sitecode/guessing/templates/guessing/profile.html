@@ -8,7 +8,7 @@
 	<a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a>
 {% endif %}
 
-{% if voteinfolist.0 %}
+{% if voteinfolist %}
 	<p>{{ u.username }}'s votes:</p>
 	{% for uservotes,g in voteinfolist %}
 		<!-- Winner choice and match details are unzipped, used for display of relevant details -->

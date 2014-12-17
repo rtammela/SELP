@@ -94,21 +94,24 @@ def profile(request, username):
 	else:
 		# User's winner_choice of all matches where user has voted are fetched:
 		uvotes = Uservotes.objects.filter(voter=u).values()
-		games = Uservotes.objects.filter(voter=u).values_list('match_id', flat=True)
-		# Match details of the corresponding matches are fetched:
-		gameinfo = []
-		for i in games:
-			a = Matchselect.objects.filter(pk=i)
-			gameinfo.append(a)
-		# Winner_choice is paired with match details for each match voted in:
-		voteinfolist = zip(uvotes,gameinfo)
-		# User's vote point details gathered:
+				# User's vote point details gathered:
 		p = Userpoints.objects.filter(voter=u)
 		# Matches created by user gathered:
 		matches_created = Matchselect.objects.filter(creator=u)
 		if not p:
 			p = Userpoints(voter=u,totalvotes=0,points=0)
 			p.save()
+		gamesvoted = Uservotes.objects.filter(voter=u).values_list('match_id', flat=True)
+		# Match details of the corresponding matches are fetched, if userv voted in any games:
+		if not gamesvoted:
+			voteinfolist = []
+		else:
+			gameinfo = []
+			for i in gamesvoted:
+				a = Matchselect.objects.filter(pk=i)
+				gameinfo.append(a)
+			# Winner_choice is paired with match details for each match voted in:
+			voteinfolist = zip(uvotes,gameinfo)
 		return render(
 			request, 'guessing/profile.html', {
 			'u': u,
