@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import permission_required
 from django.template import RequestContext
 from django.utils import timezone
 from guessing.forms import UserForm, MatchForm
@@ -154,3 +155,37 @@ def add_match(request):
 	else:
 		match_form=MatchForm()
 	return render_to_response('guessing/add_match.html', {'match_form' : match_form}, context)
+	
+@permission_required('guessing.add_userpoints')
+def add_winner(request, matchselect_id):
+	p = get_object_or_404(Matchselect, pk=matchselect_id)
+	try:
+		selected_choice = p.matchchoice_set.get(pk=request.POST['matchchoice'])
+	except (KeyError, Matchchoice.DoesNotExist):
+		# Redisplay the question voting form if no winner_choice selected
+		return render(
+			request, 
+			'guessing/add_winner.html', {
+			'matchselect': p,
+			'error_message': "You didn't select a choice.",
+		})
+	else:
+		w = Matchresult(match=p,winner=selected_choice)
+		w.save()
+		# Go through all users who voted in this match
+		voters = Uservotes.objects.filter(match=p)
+		for v in voters:
+			# If the user voted for the winner:
+			if v.winner_choice == selected_choice:
+				voterpoints = Userpoints.objects.filter(voter=v.voter)
+				if not voterpoints:
+					# Initialise new DB entry for the user if no DB entry exists (should never happen)
+					addpoints = Userpoints(voter=v.voter,totalvotes=1,points=1)
+					addpoints.save()
+				else:
+					voterpoints.points += 1
+					voterpoinds.save()
+		return HttpResponseRedirect(
+				reverse(
+				'results', 
+				args=(p.id,)))

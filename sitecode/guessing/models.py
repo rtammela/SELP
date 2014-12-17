@@ -33,3 +33,10 @@ class Uservotes(models.Model):
 	winner_choice = models.CharField(max_length=50)
 	def __str__(self):
 		return self.winner_choice
+		
+class Userpoints(models.Model):
+	voter = models.ForeignKey(User)
+	totalvotes = models.IntegerField(default=0)
+	points = models.IntegerField(default=0)
+	def __str__(self):
+		return self.points

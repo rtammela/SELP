@@ -24,3 +24,7 @@
 		<p> Winner: TBA</p>
 	{% endif %}
 {% endfor %}
+
+{% if perms.guessing.add_userpoints %}
+<a href='{% url 'add_winner' matchselect.id %}'>Select winner</a>
+{% endif %}

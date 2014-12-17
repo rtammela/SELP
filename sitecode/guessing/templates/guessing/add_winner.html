@@ -13,13 +13,14 @@
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
 {% if user.is_authenticated %}
-	<form action="{% url 'vote' matchselect.id %}" method="post">
+	<form action="{% url 'add_winner' matchselect.id %}" method="post">
+	<p>Winner of this match:</p>
 	{% csrf_token %}
 	{% for matchchoice in matchselect.matchchoice_set.all %}
 		<input type="radio" name="matchchoice" id="matchchoice{{ forloop.counter }}" value="{{ matchchoice.id }}" />
 		<label for="matchchoice{{ forloop.counter }}">{{ matchchoice.winner_choice }}</label><br />
 	{% endfor %}
-	<input type="submit" value="Vote" />
+	<input type="submit" value="Select Winner" />
 	</form>
 {% else %}
 	{% csrf_token %}
