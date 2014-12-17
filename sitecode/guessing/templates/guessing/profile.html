@@ -11,7 +11,7 @@
 <p>{{ u.username }}'s votes:</p>
 {% for uservotes,g in voteinfolist %}
 	<!-- Winner choice and match details are unzipped, used for display of relevant details -->
-	<li><a href="{% url 'results' g.0.id%}">{{g.0}}: {{g.0.team1}} vs. {{g.0.team2}}</a> {{g.0.match_date}}
-		You voted:{{uservotes.winner_choice}}</li>
+	<li><a href="{% url 'results' g.0.id%}">{{g.0}}: {{g.0.team1}} vs. {{g.0.team2}}</a> {{ g.0.match_date.day }}/{{ g.0.match_date.month }}/{{ g.0.match_date.year }}
+		 {{u.username}} voted: {{uservotes.winner_choice}}</li>
 {% endfor %}
-{{p.0.points}}
+<p>Total times voted: {{p.0.totalvotes}} Points earned:{{p.0.points}}</p>

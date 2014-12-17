@@ -71,27 +71,33 @@ def vote(request, matchselect_id):
 			return HttpResponse('Must be logged in to vote')
 
 def profile(request, username):
-	# User's winner_choice of all matches where user has voted are fetched:
-	u = User.objects.get(username=username)
-	uvotes = Uservotes.objects.filter(voter=u).values()
-	games = Uservotes.objects.filter(voter=u).values_list('match_id', flat=True)
-	# Match details of the corresponding matches are fetched:
-	gameinfo = []
-	for i in games:
-		a = Matchselect.objects.filter(pk=i)
-		gameinfo.append(a)
-	# Winner_choice is paired with match details for each match voted in:
-	voteinfolist = zip(uvotes,gameinfo)
-	p = Userpoints.objects.filter(voter=u)
-	if not p:
-		p = Userpoints(voter=u,totalvotes=0,points=0)
-		p.save()
-	return render(
-		request, 'guessing/profile.html', {
-		'u': u,
-		'voteinfolist' : voteinfolist,
-		'p' : p
-		})
+	try:
+		u = User.objects.get(username=username)
+	except (KeyError, User.DoesNotExist):
+		latest_question_list = Matchselect.objects.order_by('-match_date')[:10]
+		return render(request, 'guessing/index.html', {'error_message' : 'User by that name does not exist.',
+		'latest_question_list' : latest_question_list})
+	else:
+		# User's winner_choice of all matches where user has voted are fetched:
+		uvotes = Uservotes.objects.filter(voter=u).values()
+		games = Uservotes.objects.filter(voter=u).values_list('match_id', flat=True)
+		# Match details of the corresponding matches are fetched:
+		gameinfo = []
+		for i in games:
+			a = Matchselect.objects.filter(pk=i)
+			gameinfo.append(a)
+		# Winner_choice is paired with match details for each match voted in:
+		voteinfolist = zip(uvotes,gameinfo)
+		p = Userpoints.objects.filter(voter=u)
+		if not p:
+			p = Userpoints(voter=u,totalvotes=0,points=0)
+			p.save()
+		return render(
+			request, 'guessing/profile.html', {
+			'u': u,
+			'voteinfolist' : voteinfolist,
+			'p' : p
+			})
 		
 def register(request):
 	context = RequestContext(request)
