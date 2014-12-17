@@ -22,6 +22,13 @@ class MatchForm(forms.ModelForm):
 	team2 = forms.CharField(max_length=50)
 	# SelectDateWidget ensures year cannot be in past
 	match_date = forms.DateField(widget=SelectDateWidget, initial=timezone.now())
+	
+	def clean(self):
+		t1 = self.cleaned_data['team1']
+		t2 = self.cleaned_data['team2']
+		if (t1 == t2):
+			raise forms.ValidationError('The same team cannot be playing on both sides.')
+		return self.cleaned_data
 
 	def clean_match_date(self):
 		date = self.cleaned_data['match_date']
