@@ -50,10 +50,16 @@ def vote(request, matchselect_id):
 		# Only logged in users can vote
 		if request.user.is_authenticated():
 			u = User.objects.get(username=request.user.username)
+			# Save user vote choice,
 			user_vote = Uservotes(voter=u,match=p,winner_choice=selected_choice)
 			user_vote.save()
+			# Increment vote counter for specific choice,
 			selected_choice.votes += 1
 			selected_choice.save()
+			# Increment total number of votes for that user.
+			vote_count = Userpoints.objects.get(voter=u)
+			vote_count.totalvotes += 1
+			vote_count.save()
 			# Always return an HttpResponseRedirect after successfully dealing
 			# with POST data. This prevents data from being posted twice if a
 			# user hits the Back button.
