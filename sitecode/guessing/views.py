@@ -98,14 +98,24 @@ def get_votepercents(matchselect_id):
 	matchselect = get_object_or_404(Matchselect, pk=matchselect_id)
 	matchresult = Matchresult.objects.filter(match=matchselect_id)
 	# % of votes for each team:
-	t1_choice = Matchchoice.objects.get(match=matchselect_id,winner_choice=matchselect.team1)
-	t1_votes = t1_choice.votes
-	t2_choice = Matchchoice.objects.get(match=matchselect_id,winner_choice=matchselect.team2)
-	t2_votes = t2_choice.votes
-	t1_percent = float(t1_votes) / float(t1_votes+t2_votes) * 100
-	t2_percent = float(t2_votes) / float(t1_votes+t2_votes) * 100
-	votepercents1 = [t1_choice.winner_choice,t1_votes,t1_percent]
-	votepercents2 = [t2_choice.winner_choice,t2_votes,t2_percent]
+	t1_win = matchselect.team1
+	t2_win = matchselect.team2
+	t1_choice = Matchchoice.objects.filter(match=matchselect_id,winner_choice=t1_win)
+	t1_votes = 0
+	for t in t1_choice:
+		t1_votes = t.votes
+	t2_choice = Matchchoice.objects.filter(match=matchselect_id,winner_choice=t2_win)
+	t2_votes = 0
+	for t in t2_choice:
+		t2_votes = t.votes
+	if (t1_votes + t2_votes) > 0:
+		t1_percent = float(t1_votes) / float(t1_votes+t2_votes) * 100
+		t2_percent = float(t2_votes) / float(t1_votes+t2_votes) * 100
+	else:
+		t1_percent = 0
+		t2_percent = 0
+	votepercents1 = [t1_win,t1_votes,t1_percent]
+	votepercents2 = [t2_win,t2_votes,t2_percent]
 	votepercents = [votepercents1,votepercents2]
 	return votepercents
 	

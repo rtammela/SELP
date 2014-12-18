@@ -4,7 +4,7 @@
 	<p>{{ matchselect.game }}: {{ matchselect.team1}} vs. {{ matchselect.team2}}</p>
 	<p>{{ matchselect.match_date.day }}/{{ matchselect.match_date.month }}/{{ matchselect.match_date.year }}</p>
 	{% for i in votepercents %}
-		<li>{{ i.0}} {{ i.1 }} vote{{i.1|pluralize }} ({{i.2}}%)</li>
+		<li>{{ i.0}} {{ i.1 }} vote{{i.1|pluralize }} ({{i.2|floatformat:"2"}}%)</li>
 	{% endfor %}
 
 	{% if matchresult.0 %}
