@@ -50,11 +50,26 @@ def games(request, game):
 	return render(request, 'guessing/games.html', context)
 	
 def teams(request, teams):
+	
 	match_browse = match_browse_info()
 	# Get list of all matches where the team has participated
 	game_matches = Matchselect.objects.filter( Q(team1=teams) | Q(team2=teams))
 	game_matches.order_by('-match_date')
-	context = {'game_matches' : game_matches, 'match_browse' : match_browse}
+	# Calculate winrate for team 
+	matches_won = 0
+	total_matches = 0
+	team_name1 = game_matches[0]
+	if team_name1.team1 == teams:
+		team_name = team_name1.team1
+	else:
+		team_name = team_name1.team2
+	for g in game_matches:
+		total_matches += 1
+		match_win = Matchresult.objects.filter(match=g,winner=teams)
+		if match_win:
+			matches_won +=1
+	win_rate = (float(matches_won)/float(total_matches))*100
+	context = {'game_matches' : game_matches, 'team_name' : team_name, 'win_rate' : win_rate, 'match_browse' : match_browse}
 	return render(request, 'guessing/teams.html',context)
 	
 def detail(request, matchselect_id):
@@ -133,14 +148,14 @@ def profile(request, username):
 		if not p:
 			p = Userpoints(voter=u,totalvotes=0,points=0)
 			p.save()
-		# Accuracy for user calculated: Must use for loop (as 'p' is a QuerySet, which cannot be accessed direcly as e.g. p.points, and may be empty.)
+		# Accuracy for user calculated: Must use for loop ('p' is a QuerySet, which cannot be accessed direcly (e.g. p.points), and may be empty, in which case initialise to 0)
 		correct_rate = 0
 		for x in p:
 			correct = x.points
 			total = x.votescompleted
 			correct_rate = (float(correct)/float(total))*100
 		gamesvoted = Uservotes.objects.filter(voter=u).values_list('match_id', flat=True)
-		# Match details of the corresponding matches are fetched, if userv voted in any games:
+		# Match details of the corresponding matches are fetched, if user voted in any games:
 		if not gamesvoted:
 			voteinfolist = []
 		else:

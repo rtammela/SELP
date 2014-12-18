@@ -1,12 +1,14 @@
 {% extends 'guessing/base.html' %}
 {% block title %}The Guessing Game - {{game_matches.0.team1}}{% endblock %}
 {% block body_block %}
-	<p>{{game_matches.0.team1}}'s matches:</p>
+	<p>{{team_name}}'s matches:</p>
 
 	{% for g in game_matches %}
 			<li><a href="{% url 'detail' g.id %}">{{ g.game }}: {{ g.team1}} vs. {{ g.team2}}</a>
 			 {{ g.match_date.day }}/{{ g.match_date.month }}</li>
 	{% endfor %}
+	
+	<p>{{team_name}}'s win rate: {{win_rate}}%</p>
 {% endblock %}
 
 
