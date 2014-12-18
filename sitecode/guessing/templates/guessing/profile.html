@@ -3,7 +3,7 @@
 {% block body_block %}
 	{% if voteinfolist %}
 		<p>{{ u.username }}'s votes:</p>
-		{% for uservotes,g in voteinfolist %}
+		{% for uservotes,g in voteinfolist reversed %}
 			<!-- Winner choice and match details are unzipped, used for display of relevant details -->
 			<li><a href="{% url 'results' g.0.id%}">{{g.0}}: {{g.0.team1}} vs. {{g.0.team2}}</a> {{ g.0.match_date.day }}/{{ g.0.match_date.month }}/{{ g.0.match_date.year }}
 				{{u.username}} voted: {{uservotes.winner_choice}}</li>
@@ -15,7 +15,7 @@
 
 	{% if matches_created %}
 		<p>{{ u.username }}'s matches created:</p>
-		{% for m in matches_created %}
+		{% for m in matches_created reversed %}
 			<!-- Winner choice and match details are unzipped, used for display of relevant details -->
 			<li><a href="{% url 'detail' m.id%}">{{m.game}}: {{m.team1}} vs. {{m.team2}}</a> {{ m.match_date.day }}/{{ m.match_date.month }}/{{ m.match_date.year }}</li>
 		{% endfor %}
