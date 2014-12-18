@@ -83,18 +83,18 @@ def detail(request, matchselect_id):
 		u = User.objects.get(username=request.user.username)
 		# If so, take user directly to results page
 		if u in voters:
-			context = {'matchselect': matchselect, 'matchresult' : matchresult, 'match_browse' : match_browse}
+			context = {'matchselect': matchselect, 'matchresult' : matchresult, 'match_browse' : match_browse, 'votepercents' : get_votepercents(matchselect_id)}
 			return render(request, 'guessing/results.html', context)
 	# Check if match has completed:
 	if matchselect.match_date < datetime.date.today():
 		context = {'matchselect': matchselect, 'matchresult' : matchresult, 'match_browse' : match_browse, 'error_message': 'Match has closed.'}
 		return render( request, 'guessing/results.html', context)
 	# Otherwise, let user vote in the poll
-	context = {'matchselect': matchselect, 'match_browse' : match_browse}
+	context = {'matchselect': matchselect, 'match_browse' : match_browse, 'votepercents' : get_votepercents(matchselect_id)}
 	return render(request, 'guessing/detail.html', context)
 	
-def results(request, matchselect_id):
-	match_browse = match_browse_info()
+# Calculations of vote percentages for a given match
+def get_votepercents(matchselect_id):
 	matchselect = get_object_or_404(Matchselect, pk=matchselect_id)
 	matchresult = Matchresult.objects.filter(match=matchselect_id)
 	# % of votes for each team:
@@ -107,7 +107,13 @@ def results(request, matchselect_id):
 	votepercents1 = [t1_choice.winner_choice,t1_votes,t1_percent]
 	votepercents2 = [t2_choice.winner_choice,t2_votes,t2_percent]
 	votepercents = [votepercents1,votepercents2]
-	context = {'matchselect': matchselect, 'matchresult' : matchresult, 'votepercents' : votepercents, 'match_browse' : match_browse}
+	return votepercents
+	
+def results(request, matchselect_id):
+	match_browse = match_browse_info()
+	matchselect = get_object_or_404(Matchselect, pk=matchselect_id)
+	matchresult = Matchresult.objects.filter(match=matchselect_id)
+	context = {'matchselect': matchselect, 'matchresult' : matchresult, 'votepercents' : get_votepercents(matchselect_id), 'match_browse' : match_browse}
 	return render(request, 'guessing/results.html', context)
 	
 def vote(request, matchselect_id):
