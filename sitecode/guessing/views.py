@@ -270,7 +270,7 @@ def add_winner(request, matchselect_id):
 		voters = Uservotes.objects.filter(match=p)
 		for v in voters:
 			votercount = Userpoints.objects.get(voter=v.voter)
-			votercount.votescompleted =+ 1
+			votercount.votescompleted += 1
 			votercount.save()
 			# If the user voted for the winner, increment points by 1:
 			if v.winner_choice == str(selected_choice):
