@@ -39,7 +39,7 @@
 			<p>Player leaderboard:</p>
 			<ul>
 				{% for u, a in match_browse.browse_users %}
-					<li><a href='{% url 'profile' u.voter %}'>{{u.voter}}</a>: {{u.points}} {{a}}%</li>
+					<li><a href='{% url 'profile' u.voter %}'>{{u.voter}}</a>: {{u.points}} {{a|floatformat:"2"}}%</li>
 				{% endfor %}
 			</ul>
 			<a href='{% url 'add_match' %}'>Create new match</a>

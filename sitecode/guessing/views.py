@@ -31,7 +31,10 @@ def match_browse_info():
 	for u in users:
 		correct = u.points
 		total = u.votescompleted
-		correct_rate = (float(correct)/float(total))*100
+		if total > 0:
+			correct_rate = (float(correct)/float(total))*100
+		else:
+			correct_rate = 0
 		accuracies.append(correct_rate)
 	browse_users = zip(users,accuracies)
 	context = {'browse_games' : games, 'browse_teams' : tlist, 'browse_users' : browse_users}
@@ -146,9 +149,14 @@ def vote(request, matchselect_id):
 			selected_choice.votes += 1
 			selected_choice.save()
 			# Increment total number of votes for that user.
-			vote_count = Userpoints.objects.get(voter=u)
-			vote_count.totalvotes += 1
-			vote_count.save()
+			vote_count = Userpoints.objects.filter(voter=u)
+			if vote_count:
+				for v in vote_count:
+					v.totalvotes += 1
+					v.save()
+			else:
+				v = Userpoints(voter=u,totalvotes=1,points=0,votescompleted=0)
+				v.save()
 			# Always return an HttpResponseRedirect after successfully dealing
 			# with POST data. This prevents data from being posted twice if a
 			# user hits the Back button.
@@ -172,15 +180,19 @@ def profile(request, username):
 		p = Userpoints.objects.filter(voter=u)
 		# Matches created by user gathered:
 		matches_created = Matchselect.objects.filter(creator=u)
+		correct_rate=0
 		if not p:
 			p = Userpoints(voter=u,totalvotes=0,points=0)
 			p.save()
-		# Accuracy for user calculated: Must use for loop ('p' is a QuerySet, which cannot be accessed direcly (e.g. p.points), and may be empty, in which case initialise to 0)
-		correct_rate = 0
-		for x in p:
-			correct = x.points
-			total = x.votescompleted
-			correct_rate = (float(correct)/float(total))*100
+			correct = 0
+			total = 0
+			# Accuracy for user calculated: Must use for loop ('p' is a QuerySet, which cannot be accessed direcly (e.g. p.points), and may be empty, in which case initialise to 0)
+		else:
+			for x in p:
+				correct = x.points
+				total = x.votescompleted
+				if total > 0:
+					correct_rate = (float(correct)/float(total))*100
 		gamesvoted = Uservotes.objects.filter(voter=u).values_list('match_id', flat=True)
 		# Match details of the corresponding matches are fetched, if user voted in any games:
 		if not gamesvoted:
