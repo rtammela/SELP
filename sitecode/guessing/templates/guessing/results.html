@@ -1,7 +1,19 @@
-<p>{{ matchselect.match_info }}</p>
-<p>{{ matchselect.match_date }}</p>
-{% for matchchoice in matchselect.matchchoice_set.all %}
-	<li>{{ matchchoice.winner_choice }} {{ matchchoice.votes }} vote{{matchchoice.votes|pluralize }}</li>
-{% endfor %}
-<p> Winner: {{ matchselect.result }}</p>
-<a href="{% url 'detail' matchselect.id %}">Return to match</a>
+{% extends 'guessing/base.html' %}
+{% block title %}The Guessing Game - Match Results{% endblock %}
+{% block body_block %}
+	<p>{{ matchselect.game }}: {{ matchselect.team1}} vs. {{ matchselect.team2}}</p>
+	<p>{{ matchselect.match_date.day }}/{{ matchselect.match_date.month }}/{{ matchselect.match_date.year }}</p>
+	{% for i in votepercents %}
+		<li>{{ i.0}} {{ i.1 }} vote{{i.1|pluralize }} ({{i.2|floatformat:"2"}}%)</li>
+	{% endfor %}
+
+	{% if matchresult.0 %}
+		<p> Winner: {{ matchresult.0 }}!</p>
+	{% else %}
+		<p> Winner: TBA</p>
+		{% if perms.guessing.add_userpoints %}
+			<a href='{% url 'add_winner' matchselect.id %}'>Select winner</a>
+		{% endif %}
+	{% endif %}
+
+{% endblock %}

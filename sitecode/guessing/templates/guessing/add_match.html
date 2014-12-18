@@ -1,0 +1,11 @@
+{% extends 'guessing/base.html' %}
+{% block title %}The Guessing Game - Add Match{% endblock %}
+{% block body_block %}
+	<p>Create new match:</p>
+	<form id='match_form' method='post' action='/guessing/add_match/' enctype='multipart/form-data'>
+		{% csrf_token %}
+		<!-- as_p: wraps each elem. of form in a <p> element -->
+		{{ match_form.as_p }}
+		<input type='submit' name='submit' value='Add Match' />
+	</form>
+{% endblock %}

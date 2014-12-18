@@ -11,14 +11,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='matchchoice',
-            name='result',
-        ),
-        migrations.AddField(
-            model_name='matchselect',
-            name='result',
-            field=models.CharField(default='unknown', max_length=200),
+        migrations.AlterField(
+            model_name='uservotes',
+            name='winner_choice',
+            field=models.CharField(max_length=50),
             preserve_default=True,
         ),
     ]

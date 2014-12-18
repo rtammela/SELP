@@ -1,0 +1,17 @@
+{% extends 'guessing/base.html' %}
+{% block title %}The Guessing Game - Login{% endblock %}
+{% block body_block %}
+	{% if user.is_authenticated %}
+		<p>Welcome, <a href="{% url 'profile' user.username %}">{{ user.username }}</a>! You are already logged in.</p>
+		<a href="{% url 'logout' %}">Logout</a>
+	{% else %}
+		<p>Login:</p>
+		<form id='login_form' method='post' action='/guessing/login/'>
+			{% csrf_token %}
+			Username: <input type='text' name='username' value='' size='50' /><br>
+			Password: <input type='password' name='password' value='' size='50' />
+			<input type='submit' value='submit' />
+		</form>
+	{% endif %}
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% endblock %}

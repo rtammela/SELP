@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html>
+	{% load static %}
+    <head>
+        <title>{% block title %}The Guessing Game{% endblock %}</title>
+		<link rel='stylesheet' type='text/css' href="{% static 'style.css' %}" />
+    </head>
+
+    <body>
+		<div class = 'top_bar'>
+			<h1><a href="{% url 'index' %}">The Guessing Game</a></h1>
+
+			{% if user.is_authenticated %}
+				<p>Welcome, <a href="{% url 'profile' user.username %}">{{ user.username }}</a>!</p>
+				<a href="{% url 'logout' %}">Logout</a>
+			{% else %}
+				<br>
+				<a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a>
+			{% endif %}
+			{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+		</div>
+		
+		<div>
+			{% block body_block %}<!-- Page-specific content here -->{% endblock %}
+		</div>
+		
+		<div class = 'side_bar'>
+			<p>Browse matches by game:</p>
+			{% for g in match_browse.browse_games %}
+				<a href='{% url 'games' g %}'>{{ g }}</a>
+			{% endfor %}
+			
+			<p>Browse matches by team:</p>
+			{% for t in match_browse.browse_teams %}
+				<a href='{% url 'teams' t %}'>{{ t }}</a>
+			{% endfor %}
+			
+			<p>Player leaderboard:</p>
+			<ul>
+				{% for u, a in match_browse.browse_users %}
+					<li><a href='{% url 'profile' u.voter %}'>{{u.voter}}</a>: {{u.points}} {{a}}%</li>
+				{% endfor %}
+			</ul>
+			<a href='{% url 'add_match' %}'>Create new match</a>
+			<br><br>
+		</div>
+    </body>
+</html>

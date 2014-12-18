@@ -1,9 +1,16 @@
-{% if latest_question_list %}
-    <ul>
-    {% for matchselect in latest_question_list %}
-        <li><a href="{% url 'detail' matchselect.id %}">{{ matchselect.match_info }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No polls are available.</p>
-{% endif %}
+{% extends 'guessing/base.html' %}
+{% block title %}The Guessing Game{% endblock %}
+{% block body_block %}
+	{% if latest_question_list %}
+		<p>Latest matches:</p>
+		<ul>
+		{% for matchselect in latest_question_list %}
+			<li><a href="{% url 'detail' matchselect.id %}">{{ matchselect.game }}: {{ matchselect.team1}} vs. {{ matchselect.team2}}</a>
+			{{ matchselect.match_date.day }}/{{ matchselect.match_date.month }}</li>
+		{% endfor %}
+		</ul>
+	{% else %}
+		<p>No matches are available.</p>
+	{% endif %}
+
+{% endblock %}
