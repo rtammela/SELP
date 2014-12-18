@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.db.models import Q
 from guessing.forms import UserForm, MatchForm
 import datetime
+import itertools
 
 from guessing.models import Matchselect, Matchchoice, Matchresult, Uservotes, Userpoints
 
@@ -96,7 +97,17 @@ def results(request, matchselect_id):
 	match_browse = match_browse_info()
 	matchselect = get_object_or_404(Matchselect, pk=matchselect_id)
 	matchresult = Matchresult.objects.filter(match=matchselect_id)
-	context = {'matchselect': matchselect, 'matchresult' : matchresult, 'match_browse' : match_browse}
+	# % of votes for each team:
+	t1_choice = Matchchoice.objects.get(match=matchselect_id,winner_choice=matchselect.team1)
+	t1_votes = t1_choice.votes
+	t2_choice = Matchchoice.objects.get(match=matchselect_id,winner_choice=matchselect.team2)
+	t2_votes = t2_choice.votes
+	t1_percent = float(t1_votes) / float(t1_votes+t2_votes) * 100
+	t2_percent = float(t2_votes) / float(t1_votes+t2_votes) * 100
+	votepercents1 = [t1_choice.winner_choice,t1_votes,t1_percent]
+	votepercents2 = [t2_choice.winner_choice,t2_votes,t2_percent]
+	votepercents = [votepercents1,votepercents2]
+	context = {'matchselect': matchselect, 'matchresult' : matchresult, 'votepercents' : votepercents, 'match_browse' : match_browse}
 	return render(request, 'guessing/results.html', context)
 	
 def vote(request, matchselect_id):

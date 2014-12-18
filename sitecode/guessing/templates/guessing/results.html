@@ -3,9 +3,8 @@
 {% block body_block %}
 	<p>{{ matchselect.game }}: {{ matchselect.team1}} vs. {{ matchselect.team2}}</p>
 	<p>{{ matchselect.match_date.day }}/{{ matchselect.match_date.month }}/{{ matchselect.match_date.year }}</p>
-	{% for matchchoice in matchselect.matchchoice_set.all %}
-		<!-- Lists each choice, number of votes, and pluralises # of votes -->
-		<li>{{ matchchoice.winner_choice }} {{ matchchoice.votes }} vote{{matchchoice.votes|pluralize }}</li>
+	{% for i in votepercents %}
+		<li>{{ i.0}} {{ i.1 }} vote{{i.1|pluralize }} ({{i.2}}%)</li>
 	{% endfor %}
 
 	{% if matchresult.0 %}
