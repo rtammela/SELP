@@ -8,7 +8,7 @@
 			 {{ g.match_date.day }}/{{ g.match_date.month }}</li>
 	{% endfor %}
 	
-	<p>{{team_name}}'s win rate: {{win_rate}}%</p>
+	<p>{{team_name}}'s win rate: {{win_rate|floatformat:"2"}}%</p>
 {% endblock %}
 
 
